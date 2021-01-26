@@ -1,0 +1,117 @@
+baseURL: "https://QuarticCat.github.io/"
+title: QuarticCat's Blog
+paginate: 5
+theme: PaperMod
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: true # QC: hugo sometimes gets wrong if date format is "yyyy-mm-dd"
+buildExpired: false
+
+googleAnalytics: UA-188095502-1
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+# QC: Waiting for more complete support for Chinese
+# defaultContentLanguage: zh
+languages:
+  en:
+    languageName: English
+    menu:
+      main:
+        - name: Archives
+          url: /archives/
+          weight: 10
+        - name: Categories
+          url: /categories/
+          weight: 20
+        - name: Tags
+          url: /tags/
+          weight: 30
+        - name: Search
+          url: /search/
+          weight: 40
+        # TODO: Links
+  # zh:
+  #   languageName: 中文
+  #   menu:
+  #     main:
+  #       - name: 归档
+  #         url: /archives/
+  #         weight: 10
+  #       - name: 分类
+  #         url: /categories/
+  #         weight: 20
+  #       - name: 标签
+  #         url: /tags/
+  #         weight: 30
+  #       - name: 搜索
+  #         url: /search/
+  #         weight: 40
+  #       # TODO: 友链
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+params:
+  env: production
+  description: QuarticCat's Blog
+  author: QuarticCat
+  # images: ["<link or path of image for opengraph, twitter-cards>"]
+
+  defaultTheme: auto
+  disableThemeToggle: false
+
+  ShowReadingTime: false # QC: inaccurate for Chinese
+  ShowShareButtons: false
+  disableSpecial1stPost: true
+  hidemeta: false
+  showtoc: true
+  tocopen: true
+
+  # # TODO: want first party support
+  # comments: true
+  # utterancesRepo: "*/*"
+  # utterancesIssueTerm: "pathname"
+
+  label:
+    text: "Home"
+    icon: /apple-touch-icon.png
+    iconHeight: 35
+
+  homeInfoParams:
+    Title: QuarticCat's Blog
+    Content: \> Welcome_
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/QuarticCat"
+    - name: telegram
+      url: "https://t.me/QuarticCat"
+    - name: stackoverflow
+      url: "https://stackoverflow.com/users/14258517/quarticcat"
+    - name: twitter
+      url: "https://twitter.com/QuarticCat"
+    - name: rss
+      url: "index.xml"
+
+  cover:
+    hidden: true # hide everywhere but not in structured data
+    hiddenInList: true # hide on list pages and home
+    hiddenInSingle: false # hide on single page
+
+# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
+# pygmentsUseClasses: true
+# markup:
+#     highlight:
+#         # anchorLineNos: true
+#         codeFences: true
+#         guessSyntax: true
+#         lineNos: true
+#         style: monokai
