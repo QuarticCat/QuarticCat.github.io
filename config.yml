@@ -25,16 +25,15 @@ languages:
         - name: Archives
           url: /archives/
           weight: 10
-        - name: Categories
-          url: /categories/
-          weight: 20
+        # - name: Categories
+        #   url: /categories/
+        #   weight: 20
         - name: Tags
           url: /tags/
           weight: 30
         - name: Search
           url: /search/
           weight: 40
-        # TODO: Links
   # zh:
   #   languageName: 中文
   #   menu:
@@ -42,16 +41,15 @@ languages:
   #       - name: 归档
   #         url: /archives/
   #         weight: 10
-  #       - name: 分类
-  #         url: /categories/
-  #         weight: 20
+  #       # - name: 分类
+  #       #   url: /categories/
+  #       #   weight: 20
   #       - name: 标签
   #         url: /tags/
   #         weight: 30
   #       - name: 搜索
   #         url: /search/
   #         weight: 40
-  #       # TODO: 友链
 
 outputs:
   home:
@@ -90,6 +88,8 @@ params:
     Content: \> Welcome_
 
   socialIcons:
+    - name: email
+      url: "mailto:QuarticCat@protonmail.com"
     - name: github
       url: "https://github.com/QuarticCat"
     - name: telegram
@@ -105,13 +105,3 @@ params:
     hidden: true # hide everywhere but not in structured data
     hiddenInList: true # hide on list pages and home
     hiddenInSingle: false # hide on single page
-
-# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
-# pygmentsUseClasses: true
-# markup:
-#     highlight:
-#         # anchorLineNos: true
-#         codeFences: true
-#         guessSyntax: true
-#         lineNos: true
-#         style: monokai
