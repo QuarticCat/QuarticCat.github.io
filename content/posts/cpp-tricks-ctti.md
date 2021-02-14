@@ -16,7 +16,9 @@ tags: [cpp]
 
 ## 实现原理
 
-C++ 标准中并没有提供相关的设施供我们实现这一功能。但通过一个特殊的宏，CTTI 得以实现：`__PRETTY_FUNCTION__`。GCC 和 Clang 都有这个宏，MSVC 也有一个功能相同但名字不同的宏。这个宏的作用是返回当前函数完整签名的字符串字面量。当在一个模板函数内部调用的时候，也会包含模板参数的类型名，这就达到了我们获取类型名字的目的。
+C++ 标准中并没有提供相关的设施供我们实现这一功能。但通过 GCC 和 Clang 的一个**特殊的预定义变量**`__PRETTY_FUNCTION__`，CTTI 得以实现。这个变量的值是当前函数完整签名的字符串。当在一个模板函数内部调用的时候，也会包含模板参数的类型名，这就达到了我们获取类型名字的目的。
+
+注意，类似于标准中提供的[`__func__`](https://zh.cppreference.com/w/cpp/language/function#func)，`__PRETTY_FUNCTION__`是一个变量，因此它没法被用来初始化字符数组或者跟字符串字面量拼接在一起。MSVC 没有`__PRETTY_FUNCTION__`，但是有一个类似功能的宏`__FUNCSIG__`，它被替换为一个字符串字面量。
 
 ```cpp
 template<typename T>
@@ -67,9 +69,15 @@ constexpr size_t type_hash() {
 
 ## 可移植性
 
-上面的代码中，`__PRETTY_FUNCTION__`宏是编译器相关的，其返回的字符串也是编译器相关的，同时也和你的函数签名有关，需要针对不同编译器分别指定宏和`PREFIX`、`SUFFIX`。其余的部分都是可移植的。
+上面的代码中，`__PRETTY_FUNCTION__`是编译器相关的，其内容也是编译器相关的，需要针对不同编译器分别指定预定义变量/宏、`PREFIX`、`SUFFIX`。如果更改了相关函数的签名或者所在的命名空间，也需要相应地更改`PREFIX`和`SUFFIX`。其余的部分都是可移植的。
 
 这里用到了 C++17 的`std::string_view`，它是可以 constexpr 构造的。而在 C++17 之前则可以直接返回`const char*`或者自己实现一个可 constexpr 构造的`std::string_view`类似物。
+
+## 安全性
+
+`__PRETTY_FUNCTION__`中的类型名是带有完整命名空间路径以及模板参数（如果有的话）的，在不违背 C++ 的[「单一定义规则」](https://zh.cppreference.com/w/cpp/language/definition)（One Definition Rule，ODR）的情况下，这一名字保证在每个翻译单元内唯一。若违背了 ODR，则程序非良构。
+
+实际测试下，即使对于 C++20 的类类型模板参数（指 Class Types in Non-Type Template Parameters），GCC、Clang、MSVC 三家也均能输出其中具体的内容，从而保证名字唯一。而其他的编译器在写下这篇文章的时候都还没有支持这个特性。
 
 ## 更多
 
