@@ -201,12 +201,28 @@ struct Foo {
 };
 
 struct Bar {
+    // void a(const Bar& this_, int) {
+    //     const Bar* this = &this_;
+    // }
+    //
+    // or just:
+    //
     // void a(const Bar* this, int);
     void a(int) const;
 
+    // void a(Bar& this_, int) {
+    //     Bar* this = &this_;
+    // }
+    //
+    // or just:
+    //
     // void a(Bar* this, int);
     void a(int);
 
+    // bar.a(1) -> Bar::a(bar, 1)
+    //
+    // or:
+    //
     // bar.a(1) -> Bar::a(&bar, 1)
 };
 ```
