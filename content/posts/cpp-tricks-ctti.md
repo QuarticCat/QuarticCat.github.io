@@ -10,7 +10,7 @@ tags: [cpp]
 
 1. 它必须启用 RTTI（Run-Time Type Information）。而很多项目是禁用 RTTI 的，所以无法使用`typeid`。
 2. 它可能对表达式进行求值，详见 [cppreference](https://zh.cppreference.com/w/cpp/language/typeid) 。这可能带来意外的运行时开销甚至副作用，尤其是常用的`sizeof`和`decltype`都是完全静态的，不熟悉`typeid`的程序员可能完全意识不到这种动态行为的产生。
-3. 它不是`constexpr`的，即使其类型本可以静态求出。这意味着很多场景都无法使用 `typeid`，比如模板参数、switch-case 语句的 case 值、所有其他的 constexpr 函数。
+3. 它不是`constexpr`的，即使其类型本可以静态求出。这意味着很多场景都无法使用 `typeid`，比如模板参数、switch-case 语句的 case 值等。
 
 这就是我们为什么需要编译期类型信息，即 CTTI（Compile-Time Type Information）。
 
