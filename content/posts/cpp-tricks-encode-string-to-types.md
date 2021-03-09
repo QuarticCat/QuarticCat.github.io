@@ -8,7 +8,7 @@ tags: [cpp]
 
 ## 这玩意有什么用
 
-非要举一个具有实用意义的场景的话，[PEGTL](https://github.com/taocpp/PEGTL) 是我能想到最好的例子。这是一个 parser combinator 库，它使用类型来组合 parser ，比如这样：
+非要举一个具有实用意义的场景的话，[PEGTL](https://github.com/taocpp/PEGTL) 是我能想到的一个很好的例子。这是一个 parser combinator 库，它使用类型来组合 parser ，比如这样：
 
 ```cpp
 struct separater: star<one<' ', '\t', '\r', '\n'>> {};
@@ -17,6 +17,8 @@ struct separater: star<one<' ', '\t', '\r', '\n'>> {};
 那么要 parse 一段字符串的时候当然就要把字符串信息编码进类型里面了。
 
 我在自己的玩具 parser combinator 库里也用了这种方法，只不过我写法上使用变量来组合。
+
+除此之外，著名的 [fmt](https://github.com/fmtlib/fmt) 库也用到了这个东西来进行大量的编译期字符串操作。但它为了兼容性，实现方式都比较原始，而且重复实现了大量标准库中后来加入或者被标记为`constexpr`的东西，也许我有时间会用 C++20 实现一个简易版的 fmt 库。
 
 ## 不就是个`char...`吗
 

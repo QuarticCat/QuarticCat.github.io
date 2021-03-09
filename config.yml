@@ -66,6 +66,9 @@ params:
   defaultTheme: auto
   disableThemeToggle: false
 
+  assets:
+    disableHLJS: true
+
   ShowReadingTime: false # QC: inaccurate for Chinese
   ShowShareButtons: false
   disableSpecial1stPost: true
@@ -105,3 +108,12 @@ params:
     hidden: true # hide everywhere but not in structured data
     hiddenInList: true # hide on list pages and home
     hiddenInSingle: false # hide on single page
+
+markup:
+  highlight:
+    # anchorLineNos: true
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    # noClasses: false
+    style: monokai
