@@ -71,6 +71,8 @@ params:
 
   ShowReadingTime: false # QC: inaccurate for Chinese
   ShowShareButtons: false
+  ShowPostNavLinks: true
+  BreadCrumbNavigation: false
   disableSpecial1stPost: true
   hidemeta: false
   showtoc: true
