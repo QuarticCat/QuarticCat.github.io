@@ -12,7 +12,7 @@ tags: [cpp]
 
 最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard 10.2 Member name lookup \[class.member.lookup\]:
 
-> 1. Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Namelookup can result in anambiguity, in which case the program is ill-formed.  For anid-expression, namelookup begins in the class scope ofthis; for aqualified-id, name lookup begins in the scope of thenested-name-specifier. **Name lookup takes place before access control** (3.4, Clause 11).
+> 1. Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier. **Name lookup takes place before access control** (3.4, Clause 11).
 
 最后一句是重点，它意味着在进行 name lookup 的时候看不到`public`、`private`之类的 access specifier 。下面我给出一个非常违反直觉的 case （修改自[该问题](https://stackoverflow.com/questions/21636150/typecast-operator-in-private-base)）：
 
