@@ -10,7 +10,7 @@ tags: [cpp]
 
 这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。
 
-最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard 10.2 Member name lookup \[class.member.lookup\]:
+最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup \[class.member.lookup\]:
 
 > 1. Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier. **Name lookup takes place before access control** (3.4, Clause 11).
 
