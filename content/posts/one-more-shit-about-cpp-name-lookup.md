@@ -90,7 +90,7 @@ struct Derived: Base1, Base2 {
 
 接下来是最离谱的事情：二义性错误也可以触发 substitution failure ，因此可以被用于 SFINAE 或者 Concept 。那么结合上文，我们可以在外部探测到一个类是否拥有某个`private`/`protected`成员。
 
-假如我们要探测一个类是否有名为`x`的成员，不论`public`与否，那么我们可以构造一个具有相同成员的类 A ，再构造一个类 B 同时继承 A 和待检测的类，然后通过访问`B{}.x`制造 substitution failure 。代码如下：
+假如我们要探测一个类是否有名为`x`的成员，不论`public`与否，那么我们可以构造一个具有相同成员的类 A ，再构造一个类 B 同时继承 A 和待检测的类，然后通过访问 B 的`x`成员来制造 substitution failure 。代码如下：
 
 ```cpp
 struct A {
@@ -101,12 +101,12 @@ template<class T>
 struct B: A, T {};
 
 template<class T>
-concept TestX = !requires {
-    std::declval<B<T>>().x;
+concept TestX = !requires(B<T> b) {
+    b.x;
 };
 ```
 
-这里使用`std::declval`的原因是我们无法保证`B<T>`可以被默认构造。最后我们写两个简单的测试样例：
+最后我们写两个简单的测试样例：
 
 ```cpp
 struct HasX {
