@@ -9,8 +9,8 @@ showToc: false
 </p>
 
 <style>
-  li {
-    margin: 30px 0;
+  main li {
+    margin: 28px 0;
   }
 </style>
 
