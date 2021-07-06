@@ -2,6 +2,7 @@
 title: "C++ 名称查找的又一个恶心设计"
 date: 2021-06-23
 tags: [cpp]
+showToc: false
 ---
 
 众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 [ADL](https://en.cppreference.com/w/cpp/language/adl) ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。
