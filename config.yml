@@ -5,6 +5,7 @@ theme: PaperMod
 
 enableInlineShortcodes: true
 enableRobotsTXT: true
+
 buildDrafts: false
 buildFuture: true # QC: hugo sometimes gets wrong if date format is "yyyy-mm-dd"
 buildExpired: false
@@ -15,55 +16,16 @@ minify:
   disableXML: true
   minifyOutput: true
 
-# QC: Waiting for more complete support for Chinese
-# defaultContentLanguage: zh
-languages:
-  en:
-    languageName: English
-    menu:
-      main:
-        - name: Archives
-          url: /archives/
-          weight: 10
-        # - name: Categories
-        #   url: /categories/
-        #   weight: 20
-        - name: Tags
-          url: /tags/
-          weight: 30
-        - name: Search
-          url: /search/
-          weight: 40
-  # zh:
-  #   languageName: 中文
-  #   menu:
-  #     main:
-  #       - name: 归档
-  #         url: /archives/
-  #         weight: 10
-  #       # - name: 分类
-  #       #   url: /categories/
-  #       #   weight: 20
-  #       - name: 标签
-  #         url: /tags/
-  #         weight: 30
-  #       - name: 搜索
-  #         url: /search/
-  #         weight: 40
-
-outputs:
-  home:
-    - HTML
-    - RSS
-    - JSON
-
 params:
   env: production
-  description: QuarticCat's Blog
-  author: QuarticCat
-  # images: ["<link or path of image for opengraph, twitter-cards>"]
 
-  defaultTheme: auto
+  # meta tags
+  title: QuarticCat's Blog
+  description: Write something interesting
+  author: QuarticCat
+
+  DateFormat: 2006-01-02
+  defaultTheme: dark
   disableThemeToggle: false
 
   assets:
@@ -72,9 +34,13 @@ params:
   ShowReadingTime: false # QC: inaccurate for Chinese
   ShowShareButtons: false
   ShowPostNavLinks: true
-  BreadCrumbNavigation: false
+  ShowBreadCrumbs: false
+  ShowCodeCopyButtons: true
+
   disableSpecial1stPost: true
+  comments: false
   hidemeta: false
+  hideSummary: false
   showtoc: true
   tocopen: true
 
@@ -110,6 +76,37 @@ params:
     hidden: true # hide everywhere but not in structured data
     hiddenInList: true # hide on list pages and home
     hiddenInSingle: false # hide on single page
+
+  # editPost:
+  #   URL: "https://github.com/<path_to_repo>/content"
+  #   Text: "Suggest Changes" # edit text
+  #   appendFilePath: true # to append file path to Edit link
+
+  # # for search
+  # # https://fusejs.io/api/options.html
+  # fuseOpts:
+  #   isCaseSensitive: false
+  #   shouldSort: true
+  #   location: 0
+  #   distance: 1000
+  #   threshold: 0.4
+  #   minMatchCharLength: 0
+  #   keys: ["title", "permalink", "summary", "content"]
+
+menu:
+  main:
+    - name: Archives
+      url: /archives/
+      weight: 10
+    # - name: Categories
+    #   url: /categories/
+    #   weight: 20
+    - name: Tags
+      url: /tags/
+      weight: 30
+    - name: Search
+      url: /search/
+      weight: 40
 
 markup:
   highlight:
