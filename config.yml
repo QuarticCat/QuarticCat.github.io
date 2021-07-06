@@ -81,7 +81,6 @@ params:
   #   URL: "https://github.com/<path_to_repo>/content"
   #   Text: "Suggest Changes" # edit text
   #   appendFilePath: true # to append file path to Edit link
-
   # # for search
   # # https://fusejs.io/api/options.html
   # fuseOpts:
@@ -107,6 +106,9 @@ menu:
     - name: Search
       url: /search/
       weight: 40
+    - name: Blogroll
+      url: /blogroll/
+      weight: 50
 
 markup:
   highlight:
@@ -116,3 +118,6 @@ markup:
     lineNos: true
     # noClasses: false
     style: monokai
+  goldmark:
+    renderer:
+      unsafe: true # enable HTML within Markdown
