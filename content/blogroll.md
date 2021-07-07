@@ -29,3 +29,7 @@ showToc: false
 - 可爱鸭鸭
 
   Blog: [DuckSoft's Miscellanies](https://www.ducksoft.site/)
+
+- 血牙
+
+  Blog: [血牙的个人博客](https://xueya.me/)
