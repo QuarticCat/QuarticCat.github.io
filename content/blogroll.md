@@ -25,3 +25,7 @@ showToc: false
 - Ariel AxionL 艾雨寒
 
   Blog: [初等記憶體](https://axionl.me/)
+
+- 可爱鸭鸭
+
+  Blog: [DuckSoft's Miscellanies](https://www.ducksoft.site/)
