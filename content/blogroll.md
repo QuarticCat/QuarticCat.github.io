@@ -33,3 +33,7 @@ showToc: false
 - 血牙
 
   Blog: [血牙的个人博客](https://xueya.me/)
+
+- Xris
+
+  Blog: [Xris's Blog](https://xr1s.me/)
