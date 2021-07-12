@@ -10,7 +10,7 @@ showToc: false
 
 <style>
   main li {
-    margin: 28px 0;
+    margin: 24px 0;
   }
 </style>
 
@@ -36,4 +36,12 @@ showToc: false
 
 - Xris
 
-  Blog: [Xris's Blog](https://xr1s.me/)
+  Blog: [Xris](https://xr1s.me/)
+
+- Sinofine
+
+  Blog: [Sinofine Lotus](https://sinofine.me/)
+
+- CS Slayer
+
+  Blog: [CS Slayer](https://www.csslayer.info/)
