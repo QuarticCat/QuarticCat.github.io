@@ -1,0 +1,152 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>C++ 名称查找的又一个恶心设计 | QuarticCat's Blog</title><meta name=keywords content="cpp"><meta name=description content="众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。
+这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。
+这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。
+最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:
+  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier."><meta name=author content="QuarticCat"><link rel=canonical href=https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/><link crossorigin=anonymous href=/assets/css/stylesheet.min.fcb2dfef1f861f508726aa63fad2809727c9d99081a63847ab71ee83ce0d1203.css integrity="sha256-/LLf7x+GH1CHJqpj+tKAlyfJ2ZCBpjhHq3Hug84NEgM=" rel="preload stylesheet" as=style><link rel=preload href=/apple-touch-icon.png as=image><link rel=icon href=https://blog.quarticcat.com/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://blog.quarticcat.com/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://blog.quarticcat.com/favicon-32x32.png><link rel=apple-touch-icon href=https://blog.quarticcat.com/apple-touch-icon.png><link rel=mask-icon href=https://blog.quarticcat.com/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><meta name=generator content="Hugo 0.85.0"><style>body>header{margin-top:24px}</style><script type=application/javascript>var doNotTrack=!1;doNotTrack||(function(a,e,f,g,b,c,d){a.GoogleAnalyticsObject=b,a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)},a[b].l=1*new Date,c=e.createElement(f),d=e.getElementsByTagName(f)[0],c.async=1,c.src=g,d.parentNode.insertBefore(c,d)}(window,document,'script','https://www.google-analytics.com/analytics.js','ga'),ga('create','UA-188095502-1','auto'),ga('send','pageview'))</script><meta property="og:title" content="C++ 名称查找的又一个恶心设计"><meta property="og:description" content="众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。
+这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。
+这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。
+最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:
+  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier."><meta property="og:type" content="article"><meta property="og:url" content="https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-06-23T00:00:00+00:00"><meta property="article:modified_time" content="2021-06-23T00:00:00+00:00"><meta property="og:site_name" content="QuarticCat's Blog"><meta name=twitter:card content="summary"><meta name=twitter:title content="C++ 名称查找的又一个恶心设计"><meta name=twitter:description content="众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。
+这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。
+这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。
+最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:
+  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://blog.quarticcat.com/posts/"},{"@type":"ListItem","position":2,"name":"C++ 名称查找的又一个恶心设计","item":"https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"C++ 名称查找的又一个恶心设计","name":"C\u002b\u002b 名称查找的又一个恶心设计","description":"众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。\n这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。\n这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。\n最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:\n  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier.","keywords":["cpp"],"articleBody":"众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。\n这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。\n这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。\n最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:\n  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier. Name lookup takes place before access control (3.4, Clause 11).   最后一句是重点，它意味着在进行 name lookup 的时候看不到public、private之类的 access specifier 。下面我给出一个非常违反直觉的 case （修改自该问题）：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  struct Base { operator bool() { return true; } }; struct Derived: private Base { operator int() { return 1; } }; int main() { std::cout  Derived{}; }   请注意这里使用了private继承。不严谨地解释的话，Derived类对外实际相当于这样：\n1 2 3 4 5 6 7 8 9 10 11  struct Derived { public: operator int() { return 1; } private: operator bool() { return true; } };   然而这串代码编译器会报二义性错误，没错！因为编译器这时还看不到 access specifier ，因此operator bool()和operator int()都会当作候选，于是就产生二义性了。\n由于 C++ 没有 Zero-Sized Types ，在 C++20 出现[[no_unique_address]]之前，我们想要引入零大小成员的一种方式就是使用private/protected继承，利用空基类优化来实现 zero size 。这在模板库中并不是一种极度罕见的技巧，Boost 的compressed_pair就是以这种方式实现的。\n然而由于 C++ 名称查找的这一恶心特性，我们在使用这种技巧时将不得不考虑基类的所有成员是什么，是否会与派生类产生意外的结果，哪怕我们使用的是private继承。这实在是太离谱了，绝对可以算得上是一种抽象泄露。\n好吧，如果你说你不会用到private继承，那么下面我给出一个更容易见到的例子：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15  struct Base1 { public: int x = 1; }; struct Base2 { private: int x = 1; }; struct Derived: Base1, Base2 {}; int main() { Derived{}.x; }   这串代码编译器也会报二义性错误，同样的，因为编译器在查找.x的时候还看不到 access specifier ，它发现Base1和Base2都有一个x成员，就产生了二义性。\n这个例子更离谱一些。想象一下，假如其中Base2来自外部，那么你在它的接口文档中根本不会看到它内部有这么一个成员，而极大概率这个成员的名字也是不保证的，毕竟属于它的内部实现。然而这个成员却会妨碍你的名称查找！跟 ADL 的问题一样，这封装已经漏成筛子了，封装了个寂寞。\n当然和 ADL 的问题一样，并不是没有办法绕过，只需要稍微改下Derived类即可，只是这种问题的存在实在让人恶心。\n1 2 3  struct Derived: Base1, Base2 { using Base1::x; };   接下来是最离谱的事情：二义性错误也可以触发 substitution failure ，因此可以被用于 SFINAE 或者 Concept 。那么结合上文，我们可以在外部探测到一个类是否拥有某个private/protected成员。\n假如我们要探测一个类是否有名为x的成员，不论public与否，那么我们可以构造一个具有相同成员的类 A ，再构造一个类 B 同时继承 A 和待检测的类，然后通过访问 B 的x成员来制造 substitution failure 。代码如下：\n1 2 3 4 5 6 7 8 9 10 11  struct A { int x; }; templateclass T struct B: A, T {}; templateclass T concept TestX = !requires(BT b) { b.x; };   最后我们写两个简单的测试样例：\n1 2 3 4 5 6 7 8 9 10 11 12  struct HasX { private: int x; }; struct HasY { private: int y; }; static_assert(TestXHasX); static_assert(TestXHasY);   可以看到只有TestX为 false 。\n","wordCount":"349","inLanguage":"en","datePublished":"2021-06-23T00:00:00Z","dateModified":"2021-06-23T00:00:00Z","author":{"@type":"Person","name":"QuarticCat"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/"},"publisher":{"@type":"Organization","name":"QuarticCat's Blog","logo":{"@type":"ImageObject","url":"https://blog.quarticcat.com/favicon.ico"}}}</script></head><body class=dark id=top><script>localStorage.getItem("pref-theme")==="light"&&document.body.classList.remove('dark')</script><noscript><style type=text/css>#theme-toggle,.top-link{display:none}</style></noscript><header class=header><nav class=nav><div class=logo><a href=https://blog.quarticcat.com/ accesskey=h title="Home (Alt + H)"><img src=/apple-touch-icon.png alt=logo aria-label=logo height=35>Home</a>
+<span class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)"><svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg><svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></span></div><ul id=menu><li><a href=https://blog.quarticcat.com/archives/ title=Archives><span>Archives</span></a></li><li><a href=https://blog.quarticcat.com/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://blog.quarticcat.com/search/ title="Search (Alt + /)" accesskey=/><span>Search</span></a></li><li><a href=https://blog.quarticcat.com/blogroll/ title=Blogroll><span>Blogroll</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><h1 class=post-title>C++ 名称查找的又一个恶心设计</h1><div class=post-meta>2021-06-23&nbsp;·&nbsp;QuarticCat</div></header><div class=post-content><p>众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 <a href=https://en.cppreference.com/w/cpp/language/adl>ADL</a> ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。</p><p>这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。</p><p>这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。</p><p>最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:</p><blockquote><ol><li>Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier. <strong>Name lookup takes place before access control</strong> (3.4, Clause 11).</li></ol></blockquote><p>最后一句是重点，它意味着在进行 name lookup 的时候看不到<code>public</code>、<code>private</code>之类的 access specifier 。下面我给出一个非常违反直觉的 case （修改自<a href=https://stackoverflow.com/questions/21636150/typecast-operator-in-private-base>该问题</a>）：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Base</span> {
+    <span style=color:#66d9ef>operator</span> <span style=color:#a6e22e>bool</span>() {
+        <span style=color:#66d9ef>return</span> true;
+    }
+};
+
+<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Derived</span><span style=color:#f92672>:</span> <span style=color:#66d9ef>private</span> Base {
+    <span style=color:#66d9ef>operator</span> <span style=color:#a6e22e>int</span>() {
+        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>;
+    }
+};
+
+<span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> Derived{};
+}
+</code></pre></td></tr></table></div></div><p>请注意这里使用了<code>private</code>继承。不严谨地解释的话，<code>Derived</code>类对外实际相当于这样：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Derived</span> {
+  <span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>operator</span> <span style=color:#66d9ef>int</span>() {
+        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>;
+    }
+
+  <span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>operator</span> <span style=color:#66d9ef>bool</span>() {
+        <span style=color:#66d9ef>return</span> true;
+    }
+};
+</code></pre></td></tr></table></div></div><p>然而这串代码编译器会报二义性错误，没错！因为编译器这时还看不到 access specifier ，因此<code>operator bool()</code>和<code>operator int()</code>都会当作候选，于是就产生二义性了。</p><p>由于 C++ 没有 Zero-Sized Types ，在 C++20 出现<code>[[no_unique_address]]</code>之前，我们想要引入零大小成员的一种方式就是使用<code>private</code>/<code>protected</code>继承，利用空基类优化来实现 zero size 。这在模板库中并不是一种极度罕见的技巧，Boost 的<a href=https://theboostcpplibraries.com/boost.compressed_pair><code>compressed_pair</code></a>就是以这种方式实现的。</p><p>然而由于 C++ 名称查找的这一恶心特性，我们在使用这种技巧时将不得不考虑基类的所有成员是什么，是否会与派生类产生意外的结果，哪怕我们使用的是<code>private</code>继承。这实在是太离谱了，绝对可以算得上是一种抽象泄露。</p><p>好吧，如果你说你不会用到<code>private</code>继承，那么下面我给出一个更容易见到的例子：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Base1</span> {
+  <span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>int</span> x <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+};
+
+<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Base2</span> {
+  <span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>int</span> x <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>;
+};
+
+<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Derived</span><span style=color:#f92672>:</span> Base1, Base2 {};
+
+<span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+    Derived{}.x;
+}
+</code></pre></td></tr></table></div></div><p>这串代码编译器也会报二义性错误，同样的，因为编译器在查找<code>.x</code>的时候还看不到 access specifier ，它发现<code>Base1</code>和<code>Base2</code>都有一个<code>x</code>成员，就产生了二义性。</p><p>这个例子更离谱一些。想象一下，假如其中<code>Base2</code>来自外部，那么你在它的接口文档中根本不会看到它内部有这么一个成员，而极大概率这个成员的名字也是不保证的，毕竟属于它的内部实现。然而这个成员却会妨碍你的名称查找！跟 ADL 的问题一样，这封装已经漏成筛子了，封装了个寂寞。</p><p>当然和 ADL 的问题一样，并不是没有办法绕过，只需要稍微改下<code>Derived</code>类即可，只是这种问题的存在实在让人恶心。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Derived</span><span style=color:#f92672>:</span> Base1, Base2 {
+    <span style=color:#66d9ef>using</span> Base1<span style=color:#f92672>::</span>x;
+};
+</code></pre></td></tr></table></div></div><p>接下来是最离谱的事情：二义性错误也可以触发 substitution failure ，因此可以被用于 SFINAE 或者 Concept 。那么结合上文，我们可以在外部探测到一个类是否拥有某个<code>private</code>/<code>protected</code>成员。</p><p>假如我们要探测一个类是否有名为<code>x</code>的成员，不论<code>public</code>与否，那么我们可以构造一个具有相同成员的类 A ，再构造一个类 B 同时继承 A 和待检测的类，然后通过访问 B 的<code>x</code>成员来制造 substitution failure 。代码如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>A</span> {
+    <span style=color:#66d9ef>int</span> x;
+};
+
+<span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>T</span><span style=color:#f92672>&gt;</span>
+<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>B</span><span style=color:#f92672>:</span> A, T {};
+
+<span style=color:#66d9ef>template</span><span style=color:#f92672>&lt;</span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>T</span><span style=color:#f92672>&gt;</span>
+<span style=color:#66d9ef>concept</span> TestX <span style=color:#f92672>=</span> <span style=color:#f92672>!</span><span style=color:#66d9ef>requires</span>(B<span style=color:#f92672>&lt;</span>T<span style=color:#f92672>&gt;</span> b) {
+    b.x;
+};
+</code></pre></td></tr></table></div></div><p>最后我们写两个简单的测试样例：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0;width:auto;overflow:auto;display:block><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>HasX</span> {
+  <span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>int</span> x;
+};
+
+<span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>HasY</span> {
+  <span style=color:#66d9ef>private</span><span style=color:#f92672>:</span>
+    <span style=color:#66d9ef>int</span> y;
+};
+
+<span style=color:#66d9ef>static_assert</span>(TestX<span style=color:#f92672>&lt;</span>HasX<span style=color:#f92672>&gt;</span>);
+<span style=color:#66d9ef>static_assert</span>(TestX<span style=color:#f92672>&lt;</span>HasY<span style=color:#f92672>&gt;</span>);
+</code></pre></td></tr></table></div></div><p>可以看到只有<code>TestX&lt;HasY></code>为 false 。</p></div><footer class=post-footer><ul class=post-tags><li><a href=https://blog.quarticcat.com/tags/cpp/>cpp</a></li></ul><nav class=paginav><a class=next href=https://blog.quarticcat.com/posts/cpp-tricks-better-visitor-pattern/><span class=title>Next Page »</span><br><span>C++ Tricks：更好的访问者模式</span></a></nav></footer></article></main><footer class=footer><span>&copy; 2021 <a href=https://blog.quarticcat.com/>QuarticCat's Blog</a></span>
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+        <a href=https://git.io/hugopapermod rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)"><button class=top-link id=top-link type=button accesskey=g><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentcolor"><path d="M12 6H0l6-6z"/></svg></button></a>
+<script>let menu=document.getElementById('menu');menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)},document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener("click",function(b){b.preventDefault();var a=this.getAttribute("href").substr(1);window.matchMedia('(prefers-reduced-motion: reduce)').matches?document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(a)}']`).scrollIntoView({behavior:"smooth"}),a==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${a}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove('dark'),localStorage.setItem("pref-theme",'light')):(document.body.classList.add('dark'),localStorage.setItem("pref-theme",'dark'))})</script><script>document.querySelectorAll('pre > code').forEach(b=>{const c=b.parentNode.parentNode,a=document.createElement('button');a.classList.add('copy-code'),a.innerText='copy';function d(){a.innerText='copied!',setTimeout(()=>{a.innerText='copy'},2e3)}a.addEventListener('click',e=>{if('clipboard'in navigator){navigator.clipboard.writeText(b.textContent),d();return}const a=document.createRange();a.selectNodeContents(b);const c=window.getSelection();c.removeAllRanges(),c.addRange(a);try{document.execCommand('copy'),d()}catch(a){}c.removeRange(a)}),c.classList.contains("highlight")?c.appendChild(a):c.parentNode.firstChild==c||(b.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?b.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(a):b.parentNode.appendChild(a))})</script></body></html>

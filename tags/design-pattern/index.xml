@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>design-pattern on QuarticCat&#39;s Blog</title>
+    <link>https://blog.quarticcat.com/tags/design-pattern/</link>
+    <description>Recent content in design-pattern on QuarticCat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 10 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.quarticcat.com/tags/design-pattern/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; Tricks：更好的访问者模式</title>
+      <link>https://blog.quarticcat.com/posts/cpp-tricks-better-visitor-pattern/</link>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/cpp-tricks-better-visitor-pattern/</guid>
+      <description>引言 C++ 作为一门没有直接在语言层面支持 tagged union 的 OOP 语言，在进行诸如操作 AST 一类的处理时常常会采用访问者模式。我大一时写的一个弱智解释器中也是如此。很可惜当时在编程水平和 deadline 的双重限制下没能好好研究，时隔近一年，我对访问者模式也有了更多的理解，打算讲讲这个设计模式的问题和 C++ 中的对应解决办法。
+起步 相信所有人初学访问者模式的时候见到的都是类似下面这样的代码：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31  struct FooAcc; struct BarAcc; struct Visitor { void visit(FooAcc&amp;amp;); void visit(BarAcc&amp;amp;); }; struct AccBase { virtual void accept(Visitor&amp;amp; visitor) = 0; }; struct FooAcc: AccBase { void accept(Visitor&amp;amp; visitor) override { visitor.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tags on QuarticCat&#39;s Blog</title>
+    <link>https://blog.quarticcat.com/tags/</link>
+    <description>Recent content in Tags on QuarticCat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 23 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.quarticcat.com/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>cpp</title>
+      <link>https://blog.quarticcat.com/tags/cpp/</link>
+      <pubDate>Wed, 23 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/tags/cpp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>design-pattern</title>
+      <link>https://blog.quarticcat.com/tags/design-pattern/</link>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/tags/design-pattern/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

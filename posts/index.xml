@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on QuarticCat&#39;s Blog</title>
+    <link>https://blog.quarticcat.com/posts/</link>
+    <description>Recent content in Posts on QuarticCat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 23 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.quarticcat.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43; 名称查找的又一个恶心设计</title>
+      <link>https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/</link>
+      <pubDate>Wed, 23 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/one-more-shit-about-cpp-name-lookup/</guid>
+      <description>众所周知，C++ 的名称查找一直以来都很反直觉。比如这个 ADL ，其恶心程度在 C++ 的各种 feature 里绝对排得上号。
+这玩意经常在意想不到的地方恶心到你，还往往难以排查。具体表现为你在当前的命名空间里自己定义了一个函数，结果在调用它的时候编译器却找到了十万八千里外的另一个同名函数，而你明明没有在当前命名空间引入该函数。这种情况甚至不会有一个提示。假如是不知道这个 feature 的 C++ 新人，怕是 debug 一天也找不到哪里出了问题。
+这种行为直接破坏了命名空间的封装意义，要知道无数的 header only 库都在用命名空间来对外隐藏内部符号（谁让 C++ 的模块机制拖延了这么久呢），你都没法知道什么时候就和别人函数名字撞上了。
+最近发现了 C++ 名称查找的又一个恶心设计。来请出我们的主角，C++ Standard Draft N3337 10.2 Member name lookup [class.member.lookup]:
+  Member name lookup determines the meaning of a name (id-expression) in a class scope (3.3.7). Name lookup can result in anambiguity, in which case the program is ill-formed. For an id-expression, name lookup begins in the class scope of this; for a qualified-id, name lookup begins in the scope of the nested-name-specifier.</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43; Tricks：更好的访问者模式</title>
+      <link>https://blog.quarticcat.com/posts/cpp-tricks-better-visitor-pattern/</link>
+      <pubDate>Wed, 10 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/cpp-tricks-better-visitor-pattern/</guid>
+      <description>引言 C++ 作为一门没有直接在语言层面支持 tagged union 的 OOP 语言，在进行诸如操作 AST 一类的处理时常常会采用访问者模式。我大一时写的一个弱智解释器中也是如此。很可惜当时在编程水平和 deadline 的双重限制下没能好好研究，时隔近一年，我对访问者模式也有了更多的理解，打算讲讲这个设计模式的问题和 C++ 中的对应解决办法。
+起步 相信所有人初学访问者模式的时候见到的都是类似下面这样的代码：
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31  struct FooAcc; struct BarAcc; struct Visitor { void visit(FooAcc&amp;amp;); void visit(BarAcc&amp;amp;); }; struct AccBase { virtual void accept(Visitor&amp;amp; visitor) = 0; }; struct FooAcc: AccBase { void accept(Visitor&amp;amp; visitor) override { visitor.</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43; Tricks：把字符串编码进类型里</title>
+      <link>https://blog.quarticcat.com/posts/cpp-tricks-encode-string-to-types/</link>
+      <pubDate>Fri, 05 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/cpp-tricks-encode-string-to-types/</guid>
+      <description>又到了我第 114514 喜欢的类型体操环节。这篇文章不当正经人了，想到啥写啥。
+这玩意有什么用 非要举一个具有实用意义的场景的话，PEGTL 是我能想到的一个很好的例子。这是一个 parser combinator 库，它使用类型来组合 parser ，比如这样：
+1  struct separater: star&amp;lt;one&amp;lt;&amp;#39; &amp;#39;, &amp;#39;\t&amp;#39;, &amp;#39;\r&amp;#39;, &amp;#39;\n&amp;#39;&amp;gt;&amp;gt; {};   那么要 parse 一段字符串的时候当然就要把字符串信息编码进类型里面了。
+我在自己的玩具 parser combinator 库里也用了这种方法，只不过我写法上使用变量来组合。
+除此之外，著名的 fmt 库也用到了这个东西来进行大量的编译期字符串操作。但它为了兼容性，实现方式都比较原始，而且重复实现了大量标准库中后来加入或者被标记为constexpr的东西，也许我有时间会用 C++20 实现一个简易版的 fmt 库。
+不就是个char...吗 看了上面的例子，肯定有人会这么想。但其实再想想，我们可以有好几种方案在模板参数里接收一个字符串：
+1 2 3 4 5 6 7 8 9  template&amp;lt;const char* /* , size_t N */&amp;gt; struct Str1 {}; template&amp;lt;char...&amp;gt; struct Str2 {}; // Need C++20, will explain later template&amp;lt;SomeUserDefinedString&amp;gt; struct Str3 {};   为什么这里不写数组类型呢，因为在模板参数里，数组类型会被自动替换成指针，和第一种方案实际上是一样的。总之就这么三个，我们一个一个来讲。</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43; Tricks：编译期类型信息</title>
+      <link>https://blog.quarticcat.com/posts/cpp-tricks-ctti/</link>
+      <pubDate>Sun, 14 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/cpp-tricks-ctti/</guid>
+      <description>引言 尽管标准库中已经有了typeid运算符，但是由于其需要支持检查多态类型，带来了非常多的限制：
+ 它必须启用 RTTI（Run-Time Type Information）。而很多项目是禁用 RTTI 的，所以无法使用typeid。 它可能对表达式进行求值，详见 cppreference 。这可能带来意外的运行时开销甚至副作用，尤其是常用的sizeof和decltype都是完全静态的，不熟悉typeid的程序员可能完全意识不到这种动态行为的产生。 它不是constexpr的，即使其类型本可以静态求出。这意味着很多场景都无法使用 typeid，比如模板参数、switch-case 语句的 case 值等。  这就是我们为什么需要编译期类型信息，即 CTTI（Compile-Time Type Information）。
+实现原理 C++ 标准中并没有提供相关的设施供我们实现这一功能。但通过 GCC 和 Clang 的一个特殊的预定义变量__PRETTY_FUNCTION__，CTTI 得以实现。这个变量的值是当前函数完整签名的字符串。当在一个模板函数内部调用的时候，也会包含模板参数的类型名，这就达到了我们获取类型名字的目的。
+注意，类似于标准中提供的__func__，__PRETTY_FUNCTION__是一个变量，因此它没法被用来初始化字符数组或者跟字符串字面量拼接在一起。MSVC 没有__PRETTY_FUNCTION__，但是有一个类似功能的宏__FUNCSIG__，它被替换为一个字符串字面量。
+1 2 3 4  template&amp;lt;typename T&amp;gt; constexpr std::string_view pretty_function() { return __PRETTY_FUNCTION__; }   在 Clang 上，调用pretty_function&amp;lt;int&amp;gt;()会返回std::string_view pretty_function() [T = int]，可以看到T的类型正在其中。
+请注意，这里的typename T不能直接省略成typename，否则将不会出现T的类型名。
+当我们确定了函数名之后，返回的字符串的格式就确定了。我们可以去掉无用的前后缀，从而提取出我们实际需要的类型名。
+1 2 3 4 5 6 7 8 9 10  constexpr const char PREFIX[] = &amp;#34;std::string_view pretty_function() [T = &amp;#34;; constexpr const char SUFFIX[] = &amp;#34;]&amp;#34;; template&amp;lt;typename T&amp;gt; constexpr std::string_view type_name() { auto name = pretty_function&amp;lt;T&amp;gt;(); name.</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43; 类型阅读入门</title>
+      <link>https://blog.quarticcat.com/posts/read-cpp-types/</link>
+      <pubDate>Sat, 13 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.quarticcat.com/posts/read-cpp-types/</guid>
+      <description>引言 C++ 的类型可读性很差，并且大多数入门材料中并没有详细介绍如何阅读它们，最多只是讲到 top-level const 和 low-level const 的区别。有不少朋友问过我这方面的问题，讲得多了，干脆整理起来写篇文章。
+常见误解 在详细讲类型的阅读之前，需要纠正一个常见的误解。
+问：int a[5]里的a是什么类型的？
+答：int[5]类型，在适当的时候会「退化」（decay）成为int*类型。
+问：int a[5][6]里的a是什么类型的？
+答：int[5][6]类型，在适当的时候会「退化」成为int(*)[6]类型，即指向int[6]的指针。
+由于「退化」这种隐式转换的存在，很多初学 C++ 的人会把数组类型等同于指针类型。
+类似的，函数类型也会「退化」到指针类型，如int(int, int)会「退化」成为int(*)(int, int)。
+解方程 当你查阅如何阅读一些复杂的类型时，你可能会看到网络上一些人说 C++ 的类型就是解方程，让我来详细解释一下这句话。
+抛去 CVR (const, volatile, reference) 等不谈，C++ 最基本的声明分为两个部分：写在最左边的类型名是「类型说明符」（type specifier），剩下的部分是「声明符」（declarator）。这里沿用了 C 语言中的说法，因为这部分内容是从 C 继承过来的，它们是 C++ 类型里最恶心的地方。但这两个名字实在没啥识别度，我喜欢不严谨地称呼为返回值类型和调用表达式，这点后面会解释。先来看几个例子吧：
+   声明 类型说明符 声明符     int a int a   int* a int *a   int a[5] int a[5]   int* a[5] int *a[5]   int (*a)[5] int (*a)[5]    作出这种分别后，就可以理解上表中a的类型是怎样决定的了：以「声明符」的形式调用a后，得到的返回值类型为「类型说明符」。所谓的解方程就是这样一个过程：</description>
+    </item>
+    
+  </channel>
+</rss>
