@@ -127,6 +127,25 @@ using T = decltype("123"_s);
 理解了原理以后很容易写出一个简化的版本。有了 C++14 的`std::index_sequence`，这种简单的递归完全不需要自己写：
 
 ```cpp
+template<class S, size_t... Is>
+constexpr auto helper(std::index_sequence<Is...>) {
+    return Str2<S{}.s[Is]...>{};
+}
+
+#define STR(str)                                                       \
+    [] {                                                               \
+        struct S { const char* s = str; };                             \
+        return helper<S>(std::make_index_sequence<sizeof(str) - 1>{}); \
+    }()
+
+constexpr auto s8 = STR("123");
+```
+
+注意这里还用到了 constexpr lambda ，这是一个 C++17 的特性。这个方法有个缺陷是在 C++20 前没法直接取得类型，因为这之前 lambda 不能用在不求值语境里，没法包个`decltype`。
+
+而当我们来到了 C++20 ，有了 template lambda ，我们甚至可以只用四行写出这个宏：
+
+```cpp
 #define STR(str)                                   \
     []<size_t... Is>(std::index_sequence<Is...>) { \
         return Str2<str[Is]...>{};                 \
@@ -135,9 +154,7 @@ using T = decltype("123"_s);
 constexpr auto s8 = STR("123");
 ```
 
-我写了，四行秒了，有什么好说的。
-
-然而这个方法有个缺陷是在 C++20 前没法直接取得类型，因为这之前 lambda 不能用在不求值语境里，没法包个`decltype`。如果都上了 C++20 ，不如直接看方案三。
+只不过有个问题，既然都上了 C++20 ，那还不如直接看方案三。
 
 ### 宏展开
 
@@ -217,4 +234,4 @@ constexpr Str3<S> operator""_s() {
 constexpr auto s12 = "123"_s;
 ```
 
-我愿称之为最完美方案。唯一的问题是：目前 Clang 11.1 还不支持这一特性，而 GCC 10.2 的实现有 BUG 。不过在 GCC trunk 和 Clang trunk 都已经可以正常使用了。
+我愿称之为最完美方案。
