@@ -1,5 +1,5 @@
 ---
-title: "C++ Tricks：更好的访问者模式"
+title: "C++：更好的访问者模式"
 date: 2021-03-10
 tags: [cpp, design-pattern]
 ---

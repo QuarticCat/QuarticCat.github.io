@@ -1,5 +1,5 @@
 ---
-title: "C++ Tricks：编译期类型信息"
+title: "C++：编译期类型信息"
 date: 2021-02-14
 tags: [cpp]
 ---
