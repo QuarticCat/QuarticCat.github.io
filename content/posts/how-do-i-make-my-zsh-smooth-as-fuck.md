@@ -238,7 +238,7 @@ zstyle ':completion:*:git-diff:*' sort false
 
 这里我给自己的 global alias 写了一个补全。因为补全类型比较特殊不知道怎么拆成文件，就留在这了。Global alias 是 Zsh 特有的功能，通过`alias -g xxxx=yyy`设置，在指令的任何地方遇到单独的`xxx`都会被替换为`yyy`，而不只是指令的开头。通常设置成全大写来避免意外替换，我则是采用冒号开头。其实在 fast-syntax-highlighting 里 global alias 会被突出显示，基本不会意外替换的。这个补全的效果如下：
 
-![galias-comp](/galias-comp.svg)
+![galias-comp](/galias-comp.svg#center)
 
 然后剩下的就是一些补全的配置。我关掉了很多 git 指令的补全排序，因为它们补全的是 commit ，默认就是按照时间顺序给出的，按字符串排序后反而乱了。我正在考虑要不要默认关闭掉所有补全的排序，并不只有 git 会给出有内在顺序的补全选项。
 
@@ -287,7 +287,7 @@ export MANROFFOPT='-c'
 
 配置 man-pages 使用 [bat](https://github.com/sharkdp/bat) 作为 pager ，bat 在这里可以提供语法高亮。我的 bat 默认使用的 theme 是 OneHalfDark ，这里特意指定了用 Monokai Extended ，这是我试过一遍后感觉对 man-pages 高亮效果最好的。效果如下：
 
-![bat-man-page](/bat-man-page.svg)
+![bat-man-page](/bat-man-page.svg#center)
 
 Bat 的仓库里还有许多别的用法示例。
 

@@ -10,11 +10,56 @@ buildDrafts: false
 buildFuture: true # QC: hugo sometimes gets wrong if date format is "yyyy-mm-dd"
 buildExpired: false
 
+enableEmoji: true
+
 googleAnalytics: UA-188095502-1
 
 minify:
   disableXML: true
   minifyOutput: true
+
+defaultContentLanguage: zh
+languages:
+  zh:
+    languageName: "中文"
+    weight: 1
+    menu:
+      main:
+        - name: 归档
+          url: /archives/
+          weight: 10
+        - name: 标签
+          url: /tags/
+          weight: 20
+        - name: 搜索
+          url: /search/
+          weight: 30
+        - name: 友链
+          url: /blogroll/
+          weight: 40
+  en:
+    languageName: "English"
+    weight: 2
+    menu:
+      main:
+        - name: Archives
+          url: /archives/
+          weight: 10
+        - name: Tags
+          url: /tags/
+          weight: 20
+        - name: Search
+          url: /search/
+          weight: 30
+        - name: Blogroll
+          url: /blogroll/
+          weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
 
 params:
   env: production
@@ -25,34 +70,21 @@ params:
   author: QuarticCat
 
   DateFormat: 2006-01-02
-  defaultTheme: dark
+
+  defaultTheme: auto # to switch between dark or light according to browser theme
   disableThemeToggle: false
 
-  assets:
-    disableHLJS: true
-
+  ShowShareButtons: true
   ShowReadingTime: false # QC: inaccurate for Chinese
-  ShowShareButtons: false
-  ShowPostNavLinks: true
   ShowBreadCrumbs: false
+  ShowPostNavLinks: true
   ShowCodeCopyButtons: true
 
+  ShowToc: true
+  TocOpen: true
+
   disableSpecial1stPost: true
-  comments: false
-  hidemeta: false
-  hideSummary: false
-  showtoc: true
-  tocopen: true
-
-  # # TODO: want first party support
-  # comments: true
-  # utterancesRepo: "*/*"
-  # utterancesIssueTerm: "pathname"
-
-  label:
-    text: "Home"
-    icon: /apple-touch-icon.png
-    iconHeight: 35
+  displayFullLangName: true
 
   homeInfoParams:
     Title: QuarticCat's Blog
@@ -72,17 +104,19 @@ params:
     - name: rss
       url: "index.xml"
 
+  label:
+    text: "Home"
+    icon: /apple-touch-icon.png
+    iconHeight: 35
+
+  assets:
+    disableHLJS: true
+
   cover:
     hidden: true # hide everywhere but not in structured data
     hiddenInList: true # hide on list pages and home
     hiddenInSingle: false # hide on single page
 
-  # editPost:
-  #   URL: "https://github.com/<path_to_repo>/content"
-  #   Text: "Suggest Changes" # edit text
-  #   appendFilePath: true # to append file path to Edit link
-  # # for search
-  # # https://fusejs.io/api/options.html
   # fuseOpts:
   #   isCaseSensitive: false
   #   shouldSort: true
@@ -92,30 +126,12 @@ params:
   #   minMatchCharLength: 0
   #   keys: ["title", "permalink", "summary", "content"]
 
-menu:
-  main:
-    - name: Archives
-      url: /archives/
-      weight: 10
-    # - name: Categories
-    #   url: /categories/
-    #   weight: 20
-    - name: Tags
-      url: /tags/
-      weight: 30
-    - name: Search
-      url: /search/
-      weight: 40
-    - name: Blogroll
-      url: /blogroll/
-      weight: 50
-
 markup:
   highlight:
     # anchorLineNos: true
     codeFences: true
-    guessSyntax: true
-    lineNos: true
+    guessSyntax: false
+    lineNos: false
     # noClasses: false
     style: monokai
   goldmark:
