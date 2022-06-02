@@ -127,13 +127,14 @@ params:
   #   keys: ["title", "permalink", "summary", "content"]
 
 markup:
-  highlight:
-    # anchorLineNos: true
-    codeFences: true
-    guessSyntax: false
-    lineNos: false
-    # noClasses: false
-    style: monokai
+  # disabled to fix mobile code rendering issue, see https://github.com/adityatelange/hugo-PaperMod/issues/828
+  # highlight:
+  #   anchorLineNos: true
+  #   codeFences: true
+  #   guessSyntax: false
+  #   lineNos: false
+  #   noClasses: false
+  #   style: monokai
   goldmark:
     renderer:
       unsafe: true # enable HTML within Markdown
