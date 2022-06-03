@@ -74,7 +74,7 @@ params:
   defaultTheme: auto # to switch between dark or light according to browser theme
   disableThemeToggle: false
 
-  ShowShareButtons: true
+  ShowShareButtons: false
   ShowReadingTime: false # QC: inaccurate for Chinese
   ShowBreadCrumbs: false
   ShowPostNavLinks: true
@@ -127,14 +127,6 @@ params:
   #   keys: ["title", "permalink", "summary", "content"]
 
 markup:
-  # disabled to fix mobile code rendering issue, see https://github.com/adityatelange/hugo-PaperMod/issues/828
-  # highlight:
-  #   anchorLineNos: true
-  #   codeFences: true
-  #   guessSyntax: false
-  #   lineNos: false
-  #   noClasses: false
-  #   style: monokai
   goldmark:
     renderer:
       unsafe: true # enable HTML within Markdown

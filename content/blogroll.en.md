@@ -2,46 +2,19 @@
 title: Blogroll
 hidemeta: true
 showToc: false
+searchHidden: true
+excludeFromRss: true
 ---
 
-<p style="margin: 40px 0;">
-  Listed in no particular order
-</p>
+Listed in no particular order
 
-<style>
-  main li {
-    margin: 24px 0;
-  }
-</style>
-
-- oldherl
-
-  Blog: [Hydroxide](https://blog.oldherl.one/)
-
-- liolok 李皓奇
-
-  Blog: [liolok](https://liolok.com/)
-
-- Ariel AxionL 艾雨寒
-
-  Blog: [初等記憶體](https://axionl.me/)
-
-- 可爱鸭鸭
-
-  Blog: [DuckSoft's Miscellanies](https://www.ducksoft.site/)
-
-- 血牙
-
-  Blog: [血牙的个人博客](https://xueya.me/)
-
-- Xris
-
-  Blog: [Xris](https://xr1s.me/)
-
-- Sinofine
-
-  Blog: [Sinofine Lotus](https://sinofine.me/)
-
-- CS Slayer
-
-  Blog: [CS Slayer](https://www.csslayer.info/)
+| Name | Blog |
+| :--- | :--- |
+| oldherl | [Hydroxide](https://blog.oldherl.one/) |
+| liolok 李皓奇 | [liolok](https://liolok.com/) |
+| Ariel AxionL 艾雨寒 | [初等記憶體](https://axionl.me/) |
+| 可爱鸭鸭 | [DuckSoft's Miscellanies](https://www.ducksoft.site/) |
+| 血牙 | [血牙的个人博客](https://xueya.me/) |
+| Xris | [Xris](https://xr1s.me/) |
+| Sinofine | [Sinofine Lotus](https://sinofine.me/) |
+| CS Slayer | [CS Slayer](https://www.csslayer.info/) |
