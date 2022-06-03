@@ -37,6 +37,8 @@ languages:
         - name: 友链
           url: /blogroll/
           weight: 40
+    params:
+      DateFormat: 2006-01-02
   en:
     languageName: "English"
     weight: 2
@@ -68,8 +70,6 @@ params:
   title: QuarticCat's Blog
   description: Write something interesting
   author: QuarticCat
-
-  DateFormat: 2006-01-02
 
   defaultTheme: auto # to switch between dark or light according to browser theme
   disableThemeToggle: false
