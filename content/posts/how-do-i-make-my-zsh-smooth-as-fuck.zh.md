@@ -107,7 +107,7 @@ Zsh 可以通过 `hash -d short=long` 来设置一个 shortcut ，之后就可�
 启动 powerlevel10k instant prompt。
 
 ```zsh
-include -f ~config/p10k-instant-prompt-${(%):-%n}.zsh
+include -f ~cache/p10k-instant-prompt-${(%):-%n}.zsh
 ```
 
 我特别喜欢 p10k 的这个 feature，它通过预先启动一个外观一致但功能不完整的 prompt 来让你感觉 shell 已经启动完毕了，此时后台继续执行其余的部分，最后再加载一个完整功能的 prompt。即使我的 shell 启动时间已是飞快，用了这个 feature 都能明显感觉到提升。有了这个 feature 后 shell 的启动时间就已经不太重要了，感知大大减弱。
