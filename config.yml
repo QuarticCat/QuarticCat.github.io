@@ -7,7 +7,7 @@ enableInlineShortcodes: true
 enableRobotsTXT: true
 
 buildDrafts: false
-buildFuture: true # QC: hugo sometimes gets wrong if date format is "yyyy-mm-dd"
+buildFuture: true # hugo sometimes gets wrong if date format is "yyyy-mm-dd"
 buildExpired: false
 
 enableEmoji: true
@@ -75,7 +75,7 @@ params:
   disableThemeToggle: false
 
   ShowShareButtons: false
-  ShowReadingTime: false # QC: inaccurate for Chinese
+  ShowReadingTime: false # inaccurate for Chinese
   ShowBreadCrumbs: false
   ShowPostNavLinks: true
   ShowCodeCopyButtons: true
@@ -127,6 +127,10 @@ params:
   #   keys: ["title", "permalink", "summary", "content"]
 
 markup:
+  highlight:
+    # workaround of https://github.com/adityatelange/hugo-PaperMod/issues/695
+    noClasses: true
+    style: monokai
   goldmark:
     renderer:
       unsafe: true # enable HTML within Markdown
