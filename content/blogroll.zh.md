@@ -18,3 +18,4 @@ excludeFromRss: true
 | Xris | [Xris](https://xr1s.me/) |
 | Sinofine | [Sinofine Lotus](https://sinofine.me/) |
 | CS Slayer | [CS Slayer](https://www.csslayer.info/) |
+| Lancern | [Lancern](https://lancern.xyz/) |
