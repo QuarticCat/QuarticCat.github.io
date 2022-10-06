@@ -18,7 +18,7 @@ minify:
   disableXML: true
   minifyOutput: true
 
-defaultContentLanguage: zh
+defaultContentLanguage: en
 languages:
   zh:
     languageName: "中文"
