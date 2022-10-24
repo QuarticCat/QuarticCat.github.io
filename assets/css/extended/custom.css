@@ -1,0 +1,8 @@
+/* Ref: https://github.com/adityatelange/hugo-PaperMod/issues/695#issuecomment-1288421711 */
+/* Fixes iOS font sizing anomaly */
+code {
+  text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
