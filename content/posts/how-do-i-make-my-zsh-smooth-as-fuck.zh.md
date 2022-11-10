@@ -4,6 +4,8 @@ date: 2022-05-30
 tags: [shell, zsh]
 ---
 
+**TODO: 这篇文章已经过时。我后来又做了许多的改动，有兴趣的可以直接去看我的 [dotfiles](https://github.com/QuarticCat/dotfiles/tree/main/zsh) 。等我有空了会更新这篇文章。**
+
 ## 引言
 
 我用 Zsh 到现在大约三年了，从抛弃 Oh My Zsh 自行配置开始也有大约两年了，零零散散积攒了不少我觉得值得分享的东西，因此有了这篇 blog。另外，考虑到我的朋友大多对 Zsh 的使用比较轻度，写 Bash 居多，这篇 blog 也会顺便讲解一些零碎的 Zsh 的小知识。
@@ -169,23 +171,6 @@ Zinit 用户可能会想要 zinit 里的延迟加载功能。但实际上这个�
 我没有使用任何的 autojump / z / z.lua / zoxide 一类插件，对我来说 `hash -d` 和 fzf-tab 的组合已经让我路径输入体验十分舒适了。实际上我在使用 Zsh 的第一年经常用 z.lua ，后来换了 zoxide 。直到有一天我发现我已经很久很久没有打开过 zoxide 了，我就知道我已经不需要它了。
 
 另外，有一个使用 SQLite 来管理 shell history 的软件 [atuin](https://github.com/ellie/atuin)，也许能替换掉几个 history 相关的插件。我正打算尝试，但我非常怀疑它和 Zsh 的整合效果。
-
-### 补全和函数
-
-```zsh
-fpath=(
-    ~zdot/completions
-    ~zdot/functions
-    $fpath
-)
-autoload -Uz ~zdot/functions/*(:t)
-```
-
-函数我没有写在 zshrc 文件里面。Sukka 的 [《我就感觉到快 —— zsh 和 oh my zsh 冷启动速度优化》](https://blog.skk.moe/post/make-oh-my-zsh-fly/) 介绍了一种 lazyload function 的方法，很多人都看过。但实际上 Zsh 本身就提供了这个功能，也就是我最后一行写的 `autoload -Uz`，只需要你把函数拆出到文件即可。当你没有使用过这个函数时，执行 `which func` 可以看到函数定义里只有一行 `builtin autoload -XUz`，执行过一次后才加载成函数在文件里的定义。
-
-后面的 `~zdot/functions/*` 是普通的 glob ，`(:t)` 则是 qualifier ，效果类似 `basename`。关于 qualifier ，可以看 Aloxaf 的这个教程[《【ZSH 系列教程】历史扩展与修饰符》](https://www.aloxaf.com/2020/11/zsh_history_expansion/)。这个系列教程后面的 parameter expansion 也很值得看。对于 qualifier 和 parameter expansion 这种非常难记的语法我后面就略过不讲了，因为我自己也是每次用到都要查的。
-
-目前我暂时没有自己写的补全（除了后文会提到的那个），使用的函数也都很简单，就不具体介绍了。有兴趣的可以自己去 repo 里翻代码。
 
 ### 配置
 
