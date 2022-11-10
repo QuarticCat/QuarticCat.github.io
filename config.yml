@@ -92,7 +92,7 @@ params:
 
   socialIcons:
     - name: email
-      url: "mailto:QuarticCat@protonmail.com"
+      url: "mailto:QuarticCat@pm.me"
     - name: github
       url: "https://github.com/QuarticCat"
     - name: telegram
