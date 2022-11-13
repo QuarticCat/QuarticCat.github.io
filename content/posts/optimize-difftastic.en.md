@@ -1,12 +1,12 @@
 ---
-title: "How Do I Boost Difftastic By 3.8x"
+title: "How Do I Boost Difftastic By 4x"
 date: 2022-10-06
 tags: [rust, optimization]
 ---
 
-[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 3.8x while use only 31% memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
+[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 4x while use only 29% memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
 
-When I start to write this post, not all optimizations are reviewed and merged. But I will keep updating.
+When I started to write this post, not all optimizations were reviewed and merged. But I will keep updating.
 
 ## How Does Difftastic Work
 
@@ -34,7 +34,7 @@ We want to match them. To do this, we have two pointers to syntax nodes in two t
       - E     |      - F
 ```
 
-In each step, we have some choices, and each of them represents a diff choice (an insertion, a deletion, unchanged, etc.). For example, here we can move both pointers one node further (pre-order traversal) since the nodes they point to are the same.
+In each step, we have some choices, and each of them represents a diff choice (an insertion, a deletion, unchanged, etc.). For example, here we can move both pointers by one node (pre-order traversal) since the nodes they point to are the same.
 
 ```diff
   - A
@@ -45,7 +45,7 @@ In each step, we have some choices, and each of them represents a diff choice (a
       - E     |      - F
 ```
 
-Or we can move the left pointer one node further, which means a deletion.
+Or we can move the left pointer by one node, which means a deletion.
 
 ```diff
 - - A
@@ -57,7 +57,7 @@ Or we can move the left pointer one node further, which means a deletion.
               |      - F
 ```
 
-Or we can move the right pointer one node further, which means an insertion.
+Or we can move the right pointer by one node, which means an insertion.
 
 ```diff
 + - A
@@ -80,7 +80,7 @@ We keep moving pointers until finishing the traversal in both syntax trees. Then
 +     - F
 ```
 
-Obviously, there are multiple paths. To find the best one, we abstract it as the shortest path problem: a vertex is a pointer pair, and an edge is a movement from one pointer pair to another. Edge lengths are manually defined based on our preferences. For example, it is preferable to see two identical nodes as unchanged than one insertion plus one deletion, therefore the length of the former is shorter.
+Obviously, there are multiple paths. To find the best one, we abstract it as a shortest path problem: a vertex is a pointer pair, and an edge is a movement from one pointer pair to another. Edge lengths are manually defined based on our preferences. For example, it is preferable to see two identical nodes as unchanged rather than one insertion plus one deletion, therefore the length of the former is shorter.
 
 ```text
        +-[1]-> (B, B) -> ... --+
@@ -140,7 +140,8 @@ According to my profile results, most memory was used for storing the `Vertex` t
 
 *Commits:*
 [`2c6b706`](https://github.com/Wilfred/difftastic/pull/395/commits/2c6b7060a35a088e4a194fde4c51b18004f64c7f),
-[`5e5eef2`](https://github.com/Wilfred/difftastic/pull/401/commits/5e5eef231d2b3a65e303d16c47964e7fcd38322a)
+[`5e5eef2`](https://github.com/Wilfred/difftastic/pull/401/commits/5e5eef231d2b3a65e303d16c47964e7fcd38322a),
+[`b95c3a6`](https://github.com/Wilfred/difftastic/pull/401/commits/b95c3a6cf788c71bbfbb8ad58e295e88e56dd92d)
 
 The original parent stack structure was obscure.
 
@@ -157,17 +158,17 @@ enum EnteredDelimiter<'a> {
 ```
 
 ```text
-|  |l|                  |
-|  |l|  |r|             |
-|  |l|  |r|  PopEither  |
-|-----------------------|
-|   l    r    PopBoth   |
-|-----------------------|
-|   l    r    PopBoth   |
-|-----------------------|
-|       |r|             |
-|  |l|  |r|  PopEither  |
-|-----------------------|
+  |  |  |l|                 |
+  |  |  |l| |r|             |
+  |  |  |l| |r|  PopEither  |
+  |  |----------------------|
+  |  |   l   r    PopBoth   |
+  |  |----------------------|
+  |  |   l   r    PopBoth   |
+  |  |----------------------|
+  |  |      |r|             |
+  V  |  |l| |r|  PopEither  |
+ Top |----------------------|
 ```
 
 `Syntax` here represented a syntax tree node. This structure was essentially two stacks that stored `&'a Syntax<'a>` with a constraint that two objects must be popped together if they were pushed together (marked as `PopBoth`).
@@ -188,15 +189,15 @@ enum EnteredDelimiter<'a> {
 ```
 
 ```text
-|PopEither(l)|  |PopEither(r)|
-|PopEither(l)|  |PopEither(r)|
-|PopEither(l)|  | PopBoth(r) |
-| PopBoth(l) |  | PopBoth(r) |
-| PopBoth(l) |  |PopEither(r)|
-|PopEither(l)|  |PopEither(r)|
+  |  |PopEither(l)| |PopEither(r)|
+  |  |PopEither(l)| |PopEither(r)|
+  |  |PopEither(l)| | PopBoth(r) |
+  |  | PopBoth(l) | | PopBoth(r) |
+  V  | PopBoth(l) | |PopEither(r)|
+ Top |PopEither(l)| |PopEither(r)|
 ```
 
-It was much more straightforward and consumed less memory. Then I noticed that each `Syntax` recorded its parent, we didn't need to replicate this information in the stack. Therefore, the parent stack could be further compressed to:
+It was much more straightforward and consumed less memory. Then I noticed that each `Syntax` recorded its parent, we didn't need to replicate this information in the stack (well, that was tricky as there were some edge cases). Therefore, the parent stack could be cropped to:
 
 ```rust
 struct Vertex<'a, 'b> {
@@ -212,15 +213,15 @@ enum EnteredDelimiter {
 ```
 
 ```text
-|PopEither|  |PopEither|
-|PopEither|  |PopEither|
-|PopEither|  | PopBoth |
-| PopBoth |  | PopBoth |
-| PopBoth |  |PopEither|
-|PopEither|  |PopEither|
+  |  |PopEither| |PopEither|
+  |  |PopEither| |PopEither|
+  |  |PopEither| | PopBoth |
+  |  | PopBoth | | PopBoth |
+  V  | PopBoth | |PopEither|
+ Top |PopEither| |PopEither|
 ```
 
-Here, one layer of parents represented one layer of [delimiters](https://difftastic.wilfred.me.uk/glossary.html). It's extremely rare to see 64 layers of delimiters. Also, the state space of the algorithm is about `O(num_syntax_nodes * 2 ^ stack_depth)`. When there are 64 layers of delimiters, the algorithm is unlikely to finish within a reasonable time and memory limit. Thus, I boldly compressed this stack into a bitmap.
+One layer of parents represented one layer of [delimiters](https://difftastic.wilfred.me.uk/glossary.html). It's extremely rare to see 63 layers of delimiters. Beside, the search space of the algorithm is about `O(num_syntax_nodes * 2 ^ stack_depth)`. When there are 64 layers of delimiters, the algorithm is unlikely to finish within a reasonable time and memory limit. Thus, I boldly compressed this stack into a bitmap.
 
 ```rust
 struct Vertex<'a, 'b> {
@@ -248,7 +249,66 @@ enum EnteredDelimiter {
 }
 ```
 
-If this is too aggressive, I can turn it into a hybrid of bitmap and stack, which should still be much faster than `Stack<EnteredDelimiter>`.
+Here's one thing to add: two vertices are different if they point to different `Syntax`es or have different parent stacks. To distinguish between different vertices, we need to compare the whole stack. This is a high-frequency operation. Obviously, if two vertices have the same syntax nodes, then their parents must be equal. So comparing `EnteredDelimiter` sequence is enough. Under the bitmap representation, the whole stack can be compared in O(1) time.
+
+Can it be further optimized? Notice that in each movement, there's at most one modification. Therefore, the parent stack pairs can be represented as a link to the previous `Vertex` + a modification:
+
+```rust
+struct Vertex<'a, 'b> {
+    // ...
+    last_vertex: Option<&'b Vertex<'a, 'b>>,
+    change: StackChange,
+}
+
+enum StackChange {
+    PopEitherLhs,
+    PopEitherRhs,
+    PopBoth,
+    None,
+}
+```
+
+This structure can save 8 bytes from `Vertex` since `Vertex` has some unfilled padding space (7 bytes) to store the enum. However, it cannot be compared in O(1) time. For example:
+
+```text
+          Last Vertex:              Last Vertex:
+  |              |PopEither|   |PopEither|
+  |  |PopEither| |PopEither|   |PopEither| |PopEither|
+  |  |PopEither| | PopBoth |   |PopEither| |PopEither|
+  |  |PopEither| | PopBoth |   | PopBoth | | PopBoth |
+  V  | PopBoth | |PopEither|   | PopBoth | | PopBoth |
+ Top | PopBoth | |PopEither|   |PopEither| |PopEither|
+
+       Change: PopEitherLhs      Change: PopEitherRhs
+```
+
+They have identical stacks but different `last_vertex` and `change`. Apart from that, this structure is hard to pop. But we're close. There's one exception: two identical stack pairs must have the same `last_vertex` if the `change` is `PopBoth`. So we can just record such a vertex and the number of `PopEither` in both sides.
+
+```rust
+struct Vertex<'a, 'b> {
+    // ...
+    pop_both_ancestor: Option<&'b Vertex<'a, 'b>>,
+    pop_lhs_cnt: u16,
+    pop_rhs_cnt: u16,
+}
+```
+
+```text
+  |         3, 2, None
+  |  |PopEither| |PopEither| <--+
+  |  |PopEither| |PopEither|    |
+  |  |PopEither|                |
+  |                             |
+  |         0, 0, Some ---------+
+  |  | PopBoth | | PopBoth | <--+
+  |                             |
+  |         1, 2, Some ---------+
+  |  | PopBoth | | PopBoth |
+  V  |PopEither| |PopEither|
+ Top             |PopEither|
+```
+
+This structure not only had O(1) comparison time but also saved 8 bytes per `Vertex`. And it relaxed the parent number limitation from 63 in total to `u16::MAX` consecutive `PopEither`, although 63 should be enough. All of its operations were just slightly more expansive than bitmaps or equally cheap. Lost efficiency could be won back by improved locality.
 
 ### Tagged Pointers
 
@@ -270,7 +330,7 @@ In Dijkstra's Algorithm, once a vertex is extracted from the heap, its distance 
 
 Be aware that things can change if you're using the A* Algorithm. If you are doing a graph search rather than a tree search, which is just the case of difftastic, and your heuristic is admissible but not consistent, then visited vertices should be marked as "not visited" after being relaxed. Besides, the radix heap will be unavailable since it requires the extracted elements follow a monotonic sequence.
 
-My final code ran for ~290ms in the benchmark. Replacing the radix heap with std's binary heap results in an extra ~20ms. A heuristic must bring more speedup than that while keeping admissible. This is challenging. I've tried several ideas but never succeeded.
+My final code ran for ~280ms in the benchmark. Replacing the radix heap with std's binary heap results in an extra ~20ms. A heuristic must bring more speedup than that while keeping admissible. This is challenging. I've tried several ideas but never succeeded.
 
 ### Reserve Memory
 
@@ -323,19 +383,19 @@ It's quite hard to explain this optimization in detail. It requires a deep under
 In brief, there were many vertices in the graph that held the following properties:
 
 - One can only go to another
-- The edges between them are zero weight.
+- The edges between them are zero-weight.
 
 For example,
 
 ```text
---+                                              +-->
-  |                                              |
---+-> (l0, r0) -[0]-> (l1, r1) -[0]-> (l2, r2) --+-->
-  |                                              |
---+                                              +-->
+--+                                                +-->
+  |                                                |
+--+-> (l0, r0) --[0]-> (l1, r1) --[0]-> (l2, r2) --+-->
+  |                                                |
+--+                                                +-->
 ```
 
-In this case, we can compress these vertices into one:
+In this case, we can combine these vertices into one:
 
 ```text
 --+                  +-->
@@ -345,4 +405,20 @@ In this case, we can compress these vertices into one:
 --+                  +-->
 ```
 
-By my estimation, this optimization shrank the state space by around 15%~25%, saving a huge amount of time and memory.
+In the actual code, it's more like "while there's only one zero-weight edge, go to the next vertex."
+
+By my estimation, this optimization shrank the search space by around 15%~25%, saving a huge amount of time and memory.
+
+### Manual Inlining
+
+*Commits:*
+[`edc5516`](https://github.com/Wilfred/difftastic/pull/401/commits/edc5516eb90cc6c638e77140f2ec674378c04a73),
+[`adf6077`](https://github.com/Wilfred/difftastic/pull/401/commits/adf6077f6f5719d48c2a9fcabcabc2c9af68f48f)
+
+C++ programmers are often taught that compilers make better decisions regarding whether functions should be inlined than they do. Because their lovely `inline` keyword can no longer affect inlining. However, there are a lot of factors to consider, some of which compiler doesn't know. Inlining is not merely a matter of code size and call overhead.
+
+- It is preferable to inline frequently used functions rather than rarely used ones. Compiler doesn't know which function is hot (unless PGO is used) but you know.
+- Inlining enables more optimization opportunities. Because many optimizations cannot cross function boundaries, some of them heavily rely on inlining to bring cross-function code into their sight. Compiler cannot predict the outcome of inlining a function but you can (compile it multiple times).
+- In Rust, `inline` does have effects, especially when crossing crate boundaries.
+
+Have a try: in my final code, removing `#[inline(always)]` from function `next_vertex` will increase the execution time by ~10%.
