@@ -4,8 +4,6 @@ date: 2022-02-27
 tags: [risc-v, simd, vector]
 ---
 
-## Preface
-
 As an emerging ISA, RISC-V learns a lot from its predecessors' mistakes and brings some very appealing designs. In my circles, RISC-V is frequently associated with the words "modern" and "elegant". Its vector extension (RVV) is often given equivalent praise, even though nearly no one has used a real-world RVV machine (including me) or even programmed in RVV. After experimenting with RVV for a while, I feel that it is not as good as many people claimed.
 
 ## How Is RVV Designed
