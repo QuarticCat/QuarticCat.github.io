@@ -6,9 +6,9 @@ tags: [cpp]
 
 The readability of C++'s types is terrible, and most beginner tutorials don't go into detail about how to read them. They at most discuss the difference between *top-level const* and *low-level const*. Many of my friends have asked me about this, and I've talked about it numerous times. So I thought, why not write a blog post on it?
 
-## A Common Misunderstanding
+## A Common Misconception
 
-Before talking about type reading in detail, I'd like to correct a common misunderstanding.
+Before talking about type reading in detail, I'd like to address a common misconception.
 
 Q: What's the type of `a` in `int a[5]`?
 
@@ -107,7 +107,7 @@ More complex examples follow the same rules. Since I can't think of any point in
 
 ## `const` And `volatile`
 
-`const` and `volatile` take the same position in declarations, and they can be used together. Here for simplicity, only `const` will be used in the following examples. All `const` below can be (syntactically) legally replaced by `volatile`, `const volatile`, and `volatile const`. The later two are semantically equal.
+`const` and `volatile` take the same position in declarations, and they can be used together. Here for simplicity, only `const` will be used in the following examples. All `const` below can be (syntactically) legally replaced by `volatile`, `const volatile`, and `volatile const`. The latter two are semantically equal.
 
 `const` usually has a clear meaning, as in `const int a` and `int (*a)(const std::string&)`. Confusions of `const` often involve pointers. For pointers, `const` needs to express two meanings:
 

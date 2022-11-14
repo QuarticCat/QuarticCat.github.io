@@ -4,9 +4,9 @@ date: 2022-10-06
 tags: [rust, optimization]
 ---
 
-[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 4x while use only 29% memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
+[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 4x while using only 29% memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
 
-When I started to write this post, not all optimizations were reviewed and merged. But I will keep updating.
+When I started to write this post, not all optimizations were reviewed and merged. But I will keep it updated.
 
 ## How Does Difftastic Work
 
@@ -282,7 +282,7 @@ This structure can save 8 bytes from `Vertex` since `Vertex` has some unfilled p
        Change: PopEitherLhs      Change: PopEitherRhs
 ```
 
-They have identical stacks but different `last_vertex` and `change`. Apart from that, this structure is hard to pop. But we're close. There's one exception: two identical stack pairs must have the same `last_vertex` if the `change` is `PopBoth`. So we can just record such a vertex and the number of `PopEither` in both sides.
+They have identical stacks but different `last_vertex` and `change`. Also, this structure is hard to pop. But we're close. There's one exception: two identical stack pairs must have the same `last_vertex` if the `change` is `PopBoth`. So we can just record such a vertex and the number of `PopEither` in both sides.
 
 ```rust
 struct Vertex<'a, 'b> {
@@ -326,7 +326,7 @@ By the way, I wrote a crate called [enum-ptr](https://github.com/QuarticCat/enum
 [`3612d08`](https://github.com/Wilfred/difftastic/pull/395/commits/3612d0844af5928416c2237e57a0c9ad000a0ceb),
 [`9e11a22`](https://github.com/Wilfred/difftastic/pull/395/commits/9e11a2213ff9168500389145f34a6784dea9e89b)
 
-In Dijkstra's Algorithm, once a vertex is extracted from the heap, its distance will not be relaxed anymore. A vertex might be pushed into the heap multiple times if it was relaxed multiple times and the heap is not capable of the decrease-key operation (see pairing heap and Fibonacci heap). We can mark a vertex as "visited" after it is popped and skip such vertices. You can also skip visited neighbors.
+In Dijkstra's Algorithm, once a vertex is extracted from the heap, its distance will not be relaxed anymore. A vertex might be pushed into the heap multiple times if it was relaxed multiple times and the heap is not capable of the decrease-key operation (see pairing heap and Fibonacci heap). We can mark a vertex as "visited" after it is popped and skip such vertices. We can also skip visited neighbors.
 
 Be aware that things can change if you're using the A* Algorithm. If you are doing a graph search rather than a tree search, which is just the case of difftastic, and your heuristic is admissible but not consistent, then visited vertices should be marked as "not visited" after being relaxed. Besides, the radix heap will be unavailable since it requires the extracted elements follow a monotonic sequence.
 
@@ -405,7 +405,7 @@ In this case, we can combine these vertices into one:
 --+                  +-->
 ```
 
-In the actual code, it's more like "while there's only one zero-weight edge, go to the next vertex."
+In the actual code, it's more like "while there's only one zero-weight edge, immediately move to the next vertex."
 
 By my estimation, this optimization shrank the search space by around 15%~25%, saving a huge amount of time and memory.
 
