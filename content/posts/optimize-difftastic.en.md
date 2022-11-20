@@ -4,7 +4,7 @@ date: 2022-10-06
 tags: [rust, optimization]
 ---
 
-[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 4x while using only 29% memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
+[Difftastic](https://github.com/Wilfred/difftastic) is a structural diff that understands syntax. The diff results it generates are very fancy, but its performance is poor, and it consumes a lot of memory. Recently, I boosted it by 4x while using only 29% of memory ([#393](https://github.com/Wilfred/difftastic/pull/393), [#395](https://github.com/Wilfred/difftastic/pull/395), [#401](https://github.com/Wilfred/difftastic/pull/401)). This post explains how I accomplished this. Hope it can bring you some inspiration.
 
 When I started to write this post, not all optimizations were reviewed and merged. But I will keep it updated.
 
@@ -221,7 +221,7 @@ enum EnteredDelimiter {
  Top |PopEither| |PopEither|
 ```
 
-One layer of parents represented one layer of [delimiters](https://difftastic.wilfred.me.uk/glossary.html). It's extremely rare to see 63 layers of delimiters. Beside, the search space of the algorithm is about `O(num_syntax_nodes * 2 ^ stack_depth)`. When there are 64 layers of delimiters, the algorithm is unlikely to finish within a reasonable time and memory limit. Thus, I boldly compressed this stack into a bitmap.
+One layer of parents represented one layer of [delimiters](https://difftastic.wilfred.me.uk/glossary.html). It's extremely rare to see 63 layers of delimiters. Besides, the search space of the algorithm is about `O(num_syntax_nodes * 2 ^ stack_depth)`. When there are 64 layers of delimiters, the algorithm is unlikely to finish within a reasonable time and memory limit. Thus, I boldly compressed this stack into a bitmap.
 
 ```rust
 struct Vertex<'a, 'b> {
@@ -308,7 +308,7 @@ struct Vertex<'a, 'b> {
  Top             |PopEither|
 ```
 
-This structure not only had O(1) comparison time but also saved 8 bytes per `Vertex`. And it relaxed the parent number limitation from 63 in total to `u16::MAX` consecutive `PopEither`, although 63 should be enough. All of its operations were just slightly more expansive than bitmaps or equally cheap. Lost efficiency could be won back by improved locality.
+This structure not only had O(1) comparison time but also saved 8 bytes per `Vertex`. And it relaxed the parent number limitation from 63 in total to `u16::MAX` consecutive `PopEither`, although 63 should be enough. All of its operations were just slightly more expensive than bitmaps or equally cheap. Lost efficiency could be won back by improved locality.
 
 ### Tagged Pointers
 
