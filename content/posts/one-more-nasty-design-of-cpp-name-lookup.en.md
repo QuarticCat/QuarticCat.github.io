@@ -78,7 +78,7 @@ Since C++ does not have zero-sized types, before the advent of `[[no_unique_addr
 
 Thanks to this bizarre design, we have to consider whether the names of all members of the base class will conflict with the derived class when using this technique, even if the inheritance is `private`. This is so outrageous that it could definitely be considered an abstraction leak.
 
-Wait, you say you don't use `private` inheritance at all? Well, it can still haunt you. So let me give you a simpler example:
+Wait, you say you don't use `private` inheritance at all? Well, it can still haunt you. Here's a simpler example:
 
 ```cpp
 struct Base1 {
