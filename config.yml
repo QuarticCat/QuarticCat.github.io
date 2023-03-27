@@ -88,7 +88,14 @@ params:
 
   homeInfoParams:
     Title: QuarticCat's Blog
-    Content: \> Welcome_
+    Content: >
+      \> Welcome!
+
+
+      \> Some posts are available in only one language (zh/en).
+
+
+      \> _
 
   socialIcons:
     - name: email
