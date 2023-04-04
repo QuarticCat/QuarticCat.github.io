@@ -1,4 +1,6 @@
-name: github pages
+# Ref: https://github.com/peaceiris/actions-hugo
+
+name: GitHub Pages
 
 on:
   push:
@@ -7,9 +9,9 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
           fetch-depth: 0
@@ -21,7 +23,7 @@ jobs:
           # extended: true
 
       - name: Build
-        run: hugo
+        run: hugo --minify
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
