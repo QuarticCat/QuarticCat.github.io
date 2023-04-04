@@ -1,5 +1,5 @@
 ---
-title: "One More Nasty Design of C++'s Name Lookup"
+title: "One more nasty design of C++'s name lookup"
 date: 2021-06-23
 tags: [cpp]
 showToc: false

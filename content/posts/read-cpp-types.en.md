@@ -1,12 +1,12 @@
 ---
-title: "How To Read C++ Types"
+title: "How to read C++ types"
 date: 2021-02-13
 tags: [cpp]
 ---
 
 The readability of C++'s types is terrible, and most beginner tutorials don't go into detail about how to read them. They at most discuss the difference between *top-level const* and *low-level const*. Many of my friends have asked me about this, and I've talked about it numerous times. So I thought, why not write a blog post on it?
 
-## A Common Misconception
+## A common misconception
 
 Before talking about type reading in detail, I'd like to address a common misconception.
 
@@ -22,7 +22,7 @@ Because of the existence of *decay* rules, many C++ beginners consider array typ
 
 Similarly, function types will also *decay* to pointer types. For instance, `int(int, int)` will *decay* to `int(*)(int, int)`.
 
-## Solving Equations
+## Solving equations
 
 You might have seen some people saying that reading C++'s types is just solving equations. Let me explain this statement.
 
@@ -93,7 +93,7 @@ Such type aliases are very common in C.
 
 But if the type comes from demangling, it will be the hideous one-line looking.
 
-## Multi-Variable Declarations
+## Multi-variable declarations
 
 After you can distinguish between *type specifiers* and *declarators*, it's easy to understand the rules of C++ multi-variable declarations. In multi-variable declarations, the comma-separated *declarators* (the expressions) share one *type specifier* (the return type). For example:
 
@@ -105,7 +105,7 @@ The type of `a` is `int*` while the type of `b` is `int`, since `*` is a part of
 
 More complex examples follow the same rules. Since I can't think of any point in doing this, I won't give more examples.
 
-## `const` And `volatile`
+## `const` and `volatile`
 
 `const` and `volatile` take the same position in declarations, and they can be used together. Here for simplicity, only `const` will be used in the following examples. All `const` below can be (syntactically) legally replaced by `volatile`, `const volatile`, and `volatile const`. The latter two are semantically equal.
 
@@ -140,7 +140,7 @@ To distinguish that which `const` specifies which part, you only need to take ca
 
 The famous C++ book *C++ Primer* divides `const`s into *top-level consts* and *low-level consts*. The term *top-level const* refers to the `const` that specifies the pointer itself, i.e., the innermost one; the term *low-level const* refers to the rest.
 
-## `&` And `&&`
+## `&` and `&&`
 
 References in C++ is very special. Since C++ standard specifies that references don't necessarily occupy memory space, you can't write arrays of references (`int& a[5]`) and pointers to references (`int&* a`) and many other reference related types. I think it's a huge design failure. It adds a lot of obstacles out of nowhere.
 
@@ -163,7 +163,7 @@ Another usage of `&&` is in templates. If `T` is a template parameter, then `T&&
 
 Note that it's important that `T` is inferred to what type, because you might want to use `T` somewhere inside the template.
 
-## Member Functions
+## Member functions
 
 In C++, sometimes we can see code like this:
 
@@ -230,7 +230,7 @@ struct Bar {
 
 Member functions with references cannot be overloaded with member functions without references. You either choose the set demonstrated by `Foo` or the set demonstrated by `Bar`. Some other possible overloads, such as those with `volatile`, are omitted.
 
-## `typedef` And `using`
+## `typedef` and `using`
 
 I have shown examples of `typedef` and `using` in previous sections. The syntax of `typedef` is exactly the same as defining a variable. The only one difference in syntax between `typedef` and `using` is that `using` put the type name in the left. In the following example, both `foo_t` and `bar_t` have the same type of `func_ptr`.
 

@@ -1,5 +1,5 @@
 ---
-title: "How Do I Boost Difftastic By 4x"
+title: "How do I boost difftastic By 4x"
 date: 2022-10-06
 tags: [rust, optimization]
 ---
@@ -8,7 +8,7 @@ tags: [rust, optimization]
 
 When I started to write this post, not all optimizations were reviewed and merged. But I will keep it updated.
 
-## How Does Difftastic Work
+## How does difftastic work
 
 The official manual has a [chapter](https://difftastic.wilfred.me.uk/diffing.html) describing its diff algorithm. Here's my understanding:
 
@@ -94,7 +94,7 @@ This is a simplified illustration. In the actual code, there are more kinds of e
 
 You don't have to fully understand how it works internally to start optimizing. As long as your optimized code logically equals the previous one, it should be good. It is typical for your comprehension of the code to progressively advance throughout the optimization process. Of course, having a deeper understanding helps you identify more optimization opportunities.
 
-## Benchmarking & Profiling
+## Benchmarking & profiling
 
 To perform optimization, you should first define a baseline, i.e., find a benchmark, and then profile it to locate hot spots and choose which code area merits your attention. Fortunately, the official manual also offers a [chapter](https://difftastic.wilfred.me.uk/contributing.html#profiling) that covers all we need.
 
@@ -110,7 +110,7 @@ Another trick is that you can print something into stderr and then filter them b
 
 Here comes the main dish. I will select several commits and describe what I have done.
 
-### Free Lunch
+### Free lunch
 
 *Commits:*
 [`06b46e9`](https://github.com/Wilfred/difftastic/pull/393/commits/06b46e935589117ac4583b6ca0d2a3020eb1c6b4)
@@ -127,7 +127,7 @@ There are some free optimization approaches you can have a taste first. I call t
 
 - Memory Allocator: The default memory allocator usually performs badly. Better alternatives include {je,tc,mi,sn}malloc and maybe more.
 
-### Simple Simplifications
+### Simple simplifications
 
 *Commits:*
 [`d48ee2d`](https://github.com/Wilfred/difftastic/pull/393/commits/d48ee2dfdb59e98c71ce8fd99933268a1eee56ee),
@@ -136,7 +136,7 @@ There are some free optimization approaches you can have a taste first. I call t
 
 According to my profile results, most memory was used for storing the `Vertex` type. Any simplification of this type will result in a huge improvement. I discovered that one of its fields implemented `Copy` but was wrapped by `RefCell`, which was overkilled. `Cell` was just enough. Moreover, I found that the internal third-party `Stack` type had a lot of fields that were useless for this problem. It was a very simple functional stack, so I just wrote a new one to replace it.
 
-### Refactor Parent Stack
+### Refactor parent stack
 
 *Commits:*
 [`2c6b706`](https://github.com/Wilfred/difftastic/pull/395/commits/2c6b7060a35a088e4a194fde4c51b18004f64c7f),
@@ -310,7 +310,7 @@ struct Vertex<'a, 'b> {
 
 This structure not only had O(1) comparison time but also saved 8 bytes per `Vertex`. And it relaxed the parent number limitation from 63 in total to `u16::MAX` consecutive `PopEither`, although 63 should be enough. All of its operations were just slightly more expensive than bitmaps or equally cheap. Lost efficiency could be won back by improved locality.
 
-### Tagged Pointers
+### Tagged pointers
 
 *Commits:*
 [`d2f5e99`](https://github.com/Wilfred/difftastic/pull/395/commits/d2f5e996b60465ee866ae13677930328740a14b3),
@@ -320,7 +320,7 @@ This structure not only had O(1) comparison time but also saved 8 bytes per `Ver
 
 By the way, I wrote a crate called [enum-ptr](https://github.com/QuarticCat/enum-ptr) dedicated to this trick.
 
-### Skip Visited Vertices
+### Skip visited vertices
 
 *Commits:*
 [`3612d08`](https://github.com/Wilfred/difftastic/pull/395/commits/3612d0844af5928416c2237e57a0c9ad000a0ceb),
@@ -332,7 +332,7 @@ Be aware that things can change if you're using the A* Algorithm. If you are doi
 
 My final code ran for ~280ms in the benchmark. Replacing the radix heap with std's binary heap results in an extra ~20ms. A heuristic must bring more speedup than that while keeping admissible. This is challenging. I've tried several ideas but never succeeded.
 
-### Reserve Memory
+### Reserve memory
 
 *Commits:*
 [`b0ab6c8`](https://github.com/Wilfred/difftastic/pull/395/commits/b0ab6c899a369cab73d79304002563fe08bae10d),
@@ -341,14 +341,14 @@ My final code ran for ~280ms in the benchmark. Replacing the radix heap with std
 
 Trivial.
 
-### Reuse Memory
+### Reuse memory
 
 *Commits:*
 [`8a0c82a`](https://github.com/Wilfred/difftastic/pull/401/commits/8a0c82ad623121d63cafeae7eedb3c0471861e7a)
 
 After `9e11a22`, neighbor nodes were no longer required to be stored in vertices. They could be simply thrown away after the loop. The code logic became: create a neighbor vector, find neighbors, and return that vector. Then the profile result showed that creating vectors took a noticeable amount of time. So I created a vector outside the loop and reuse it in each round. This saved numerous memory operations.
 
-### Exploit Invariants
+### Exploit invariants
 
 *Commits:*
 [`9f1a0ab`](https://github.com/Wilfred/difftastic/pull/395/commits/9f1a0ab1e606e7f32c22d42b6652555426c7b1fc),
@@ -371,7 +371,7 @@ But I found that `lhs/rhs_parent_id` is `Some` only when `lhs/rhs_syntax` is `No
 
 Later, I found that during the entire shortest path finding procedure, the syntax tree was pinned. Thus, we didn't need to obtain the unique `SyntaxId` at all. The pointer addresses were already unique. This further saved some instructions.
 
-### Prune Vertices
+### Prune vertices
 
 *Commits:*
 [`10ce859`](https://github.com/Wilfred/difftastic/pull/401/commits/10ce859bf4c465e3d32fa909c4f6150282910c05)
@@ -409,7 +409,7 @@ In the actual code, it's more like "while there's only one zero-weight edge, imm
 
 By my estimation, this optimization shrank the search space by around 15%~25%, saving a huge amount of time and memory.
 
-### Manual Inlining
+### Manual inlining
 
 *Commits:*
 [`edc5516`](https://github.com/Wilfred/difftastic/pull/401/commits/edc5516eb90cc6c638e77140f2ec674378c04a73),

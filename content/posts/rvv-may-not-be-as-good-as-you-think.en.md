@@ -1,12 +1,12 @@
 ---
-title: "RVV May Not Be as Good as You Think"
+title: "RVV may not be as good as you think"
 date: 2022-02-27
 tags: [risc-v, simd, vector]
 ---
 
 As an emerging ISA, RISC-V learns a lot from its predecessors' mistakes and brings some very appealing designs. In my circles, RISC-V is frequently associated with the words "modern" and "elegant". Its vector extension (RVV) is often given equivalent praise, even though nearly no one has used a real-world RVV machine (including me) or even programmed in RVV. After experimenting with RVV for a while, I feel that it is not as good as many people claimed.
 
-## How Is RVV Designed
+## How is RVV designed
 
 In contrast to SIMD architectures, RVV has variable-length vector registers. That means different chips (hardware threads, or harts, to be precise) can have different vector register lengths while sharing the same instruction set. To accomplish this, the software must get and set the length parameter with some instructions at runtime. RVV operations distinguish only between vector-vector and vector-scalar, signed and unsigned, but not element lengths. As a result, the element length is a dynamic parameter as well. Furthermore, RVV enables us to use only a portion of a vector register or to combine multiple vector registers, which necessitates the usage of a dynamic parameter. The type of a vector register is mainly governed by the factors listed below.
 
@@ -26,7 +26,7 @@ There are a few other parameters. However, they will not be discussed in this bl
 
 More details can be found in the [RVV Spec](https://github.com/riscv/riscv-v-spec). I'll end my introduction here.
 
-## Annoyances of RVV C Intrinsics
+## Annoyances of RVV C intrinsics
 
 In RVV C intrinsics, `vl`, `vma`, `vta` are specified at function invocations, whereas `vsew`, `vlmul` are hard-coded into types. Compilers are responsible to insert `vset{i}vl{i}` instructions for you. We now have the following horrible table (source: [RVV Intrinsic RFC](https://github.com/riscv-non-isa/rvv-intrinsic-doc/blob/master/rvv-intrinsic-rfc.md#type-system)).
 
@@ -77,7 +77,7 @@ Thanks to `LMUL`, the amount of intrinsic types is huge, making the size of the 
 
 These are just some small annoyances during my experience of RVV. I won't use them to criticize RVV. The major problem is that these intrinsic types are all *dynamically sized types* (or *sizeless types*, or *unsized types*) due to RVV's variable-length nature. And I'm afraid that DSTs are poorly supported in all languages, not just C.
 
-## The Ecosystem Has Not Prepared for DSTs
+## The ecosystem has not prepared for DSTs
 
 First of all, the C language standard actually has a DST, i.e., the [variable-length array](https://en.cppreference.com/w/c/language/array#Variable-length_arrays). When a VLA is constructed, the current stack frame will be dynamically extended. It's like `alloca` with some extra information such as type and lifetime. The implementation of RVV intrinsic types in Clang is very similar to VLA.
 
@@ -95,7 +95,7 @@ Maybe I've taken the problem too seriously, because scenarios that uses SIMD/Vec
 
 Only Google's [highway](https://github.com/google/highway) pronounces support RVV, as far as I'm aware. However, some of its modules, such as vqsort, don't. It is common for other sorting networks to employ transposes, but vqsort's sorting network uses a number of permutations to avoid transposing, making it extremely challenging to convert to RVV because it is length-agnostic. It seems that [nsimd](https://github.com/agenium-scale/nsimd) tried to support RVV but stopped a long time ago.
 
-## Choice of Intrinsic Types Is Not Clear
+## Choice of intrinsic types is not clear
 
 The SIMD type to employ is typically obvious. Numerous SIMD libraries, such as C++'s experimental `<simd>`, can choose an underlying SIMD type for you automatically. For instance, on x86 platforms, the fallback order is commonly AVX512 -> AVX2 -> SSE2, despite the fact that the time required to switch between licenses and the degree of downclocking of AVX512 and AVX2 differ amongst microarchitectures. And since you simply need to take into account the element type, it is also evident for ARM SVE. However, things become considerably more confusing in RVV.
 
@@ -107,13 +107,13 @@ If the compiler is unable to select an appropriate `LMUL` for you, then you have
 
 Given the resemblance between selecting `LMUL` values and unrolling loops, I have to wonder if `LMUL` is really essential. Will the speedup warrant the additional complexity it adds? We don't know because RVV hardware is currently scarce.
 
-## Possible Higher Context Switch Cost
+## Possible higher context switch cost
 
 The context size issue plagues older vector processors (according to some articles, though, I'm not familiar with that period of history). Their vector registers are typically made to be long in order to achieve a high speedup. This method will undoubtedly bloat the context size. As a result, operating systems must spend additional time and resources on register saving during context switching.
 
 *The RISC-V Reader*, a popular resource for RISC-V newcomers, proudly claims that RVV can avoid this problem, because RVV has a dedicated instruction `vsetdcfg` that can enable / disable registers by need, so that we can only pay for what we use. Sounds promising, doesn't it? However, *The RISC-V Reader* is very out-dated. The instruction `vsetdcfg` has already been deprecated in the current RVV spec. RVV now only has a very coarse-grained mechanism that records whether any vector register is modified or not. If the vendor chooses a long-length implementation, I believe RVV will also experience the context size issue. This problem is unlikely to bother you though. Super long vectors are usually designed for HPC, of which the resource is usually dedicated to one single program at a time.
 
-## Can RVV Emulate SIMD?
+## Can RVV emulate SIMD?
 
 Some blogs and talks say that RVV can, at worst, emulate SIMD. THIS IS NOT TRUE.
 
