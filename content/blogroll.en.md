@@ -19,3 +19,5 @@ Listed in no particular order
 | Sinofine | [Sinofine Lotus](https://sinofine.me/) |
 | CS Slayer | [CS Slayer](https://www.csslayer.info/) |
 | Lancern | [Lancern](https://lancern.xyz/) |
+| 孙子平 | [山楂片的博客](https://szp15.com/) |
+| kxxt | [kxxt 的小站](https://www.kxxt.dev/) |
