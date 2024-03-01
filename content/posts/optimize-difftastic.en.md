@@ -1,5 +1,5 @@
 ---
-title: "How do I boost difftastic By 4x"
+title: "How do I boost difftastic by 4x"
 date: 2022-10-06
 tags: [rust, optimization]
 ---
