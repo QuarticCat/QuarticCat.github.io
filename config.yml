@@ -3,14 +3,13 @@ title: QuarticCat's Blog
 paginate: 5
 theme: PaperMod
 
-enableInlineShortcodes: true
+enableEmoji: true
 enableRobotsTXT: true
+enableInlineShortcodes: true
 
 buildDrafts: false
 buildFuture: true # hugo sometimes gets wrong if date format is "yyyy-mm-dd"
 buildExpired: false
-
-enableEmoji: true
 
 googleAnalytics: UA-188095502-1
 
@@ -21,7 +20,7 @@ minify:
 defaultContentLanguage: en
 languages:
   zh:
-    languageName: "中文"
+    languageName: 中文
     weight: 1
     menu:
       main:
@@ -40,7 +39,7 @@ languages:
     params:
       DateFormat: 2006-01-02
   en:
-    languageName: "English"
+    languageName: English
     weight: 2
     menu:
       main:
@@ -66,36 +65,33 @@ outputs:
 params:
   env: production
 
-  # meta tags
   title: QuarticCat's Blog
   description: Write something interesting
+  keywords: [Blog, Portfolio, PaperMod]
   author: QuarticCat
 
   defaultTheme: auto # to switch between dark or light according to browser theme
   disableThemeToggle: false
 
-  ShowShareButtons: false
   ShowReadingTime: false # inaccurate for Chinese
-  ShowBreadCrumbs: false
+  ShowShareButtons: false
   ShowPostNavLinks: true
-  ShowCodeCopyButtons: true
-
-  ShowToc: true
-  TocOpen: true
-
+  ShowBreadCrumbs: false
+  ShowCodeCopyButtons: false
+  ShowWordCount: false # inaccurate for Chinese
+  ShowRssButtonInSectionTermList: false
+  UseHugoToc: true
   disableSpecial1stPost: true
-  displayFullLangName: true
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: true
+  tocopen: true
 
   homeInfoParams:
     Title: QuarticCat's Blog
-    Content: >
-      \> Welcome!
-
-
-      \> Some posts are available in only one language (zh/en).
-
-
-      \> _
+    Content: \> Welcome_
 
   socialIcons:
     - name: email
@@ -105,7 +101,7 @@ params:
     - name: telegram
       url: "https://t.me/QuarticCat"
     - name: stackoverflow
-      url: "https://stackoverflow.com/users/14258517/quarticcat"
+      url: "https://stackoverflow.com/users/14258517"
     - name: twitter
       url: "https://twitter.com/QuarticCat"
     - name: rss
@@ -117,26 +113,15 @@ params:
     iconHeight: 35
 
   assets:
-    disableHLJS: true
+    disableHLJS: true # disable highlight.js
 
   cover:
     hidden: true # hide everywhere but not in structured data
     hiddenInList: true # hide on list pages and home
     hiddenInSingle: false # hide on single page
 
-  # fuseOpts:
-  #   isCaseSensitive: false
-  #   shouldSort: true
-  #   location: 0
-  #   distance: 1000
-  #   threshold: 0.4
-  #   minMatchCharLength: 0
-  #   keys: ["title", "permalink", "summary", "content"]
-
 markup:
   highlight:
-    # workaround of https://github.com/adityatelange/hugo-PaperMod/issues/695
-    noClasses: true
     style: monokai
   goldmark:
     renderer:
