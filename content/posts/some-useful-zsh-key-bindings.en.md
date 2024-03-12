@@ -110,6 +110,8 @@ This function also includes shell-word widgets to let you move with greater stri
 
 ### Accept line
 
+**Update 2024-03-12**: I find that Roman Perepelitsa has made an excellent plugin called [zsh-no-ps2](https://github.com/romkatv/zsh-no-ps2) for this purpose. It's more thoughtful and rigorous than my widget.
+
 ```zsh
 # [Enter] Insert `\n` when accept-line would result in a parse error or PS2
 # Ref: https://github.com/romkatv/zsh4humans/blob/v5/fn/z4h-accept-line
@@ -148,7 +150,7 @@ echo 'hello world'
 
 We tripple-click it to select the whole line and then copy. However, tripple-clicking also selects the newline character. This could be annoying when pasting to the terminal. Have a try!
 
-Thankfully, we have `bracketed-paste` handling all pasted text. We can hook pasting by overwriting this widget. My widget is very simple: it trims trailing whitespace from pasted text.
+Thankfully, we have `bracketed-paste` handling all pasted text. We can hook pasting by overwriting this widget. The same trick is used by [bracketed-paste-magic](https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-magic) and [bracketed-paste-url-magic](https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-url-magic).
 
 ### Rationalize dot
 
