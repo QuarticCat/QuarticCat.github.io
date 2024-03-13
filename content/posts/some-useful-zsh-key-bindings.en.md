@@ -148,7 +148,7 @@ Sometimes, we want to copy some command from the browser, say:
 echo 'hello world'
 ```
 
-We tripple-click it to select the whole line and then copy. However, tripple-clicking also selects the newline character. This could be annoying when pasting to the terminal. Have a try!
+We triple-click it to select the whole line and then copy. However, triple-clicking also selects the newline character. This could be annoying when pasting to the terminal. Have a try!
 
 Thankfully, we have `bracketed-paste` handling all pasted text. We can hook pasting by overwriting this widget. The same trick is used by [bracketed-paste-magic](https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-magic) and [bracketed-paste-url-magic](https://github.com/zsh-users/zsh/blob/master/Functions/Zle/bracketed-paste-url-magic).
 
@@ -208,7 +208,7 @@ zle -C qc-fuck complete-word qc-fuck
 bindkey '\e\e' qc-fuck
 ```
 
-It's a powerful replacement of oh-my-zsh's [sudo plugin](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo). It calls `thefuck` to correct previous comamnd. There are many cases that sudo plugin cannot handle, for example:
+It's a powerful replacement of oh-my-zsh's [sudo plugin](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/sudo). It calls `thefuck` to correct previous command. There are many cases that sudo plugin cannot handle, for example:
 
 ```zsh
 echo 1 > /sys/devices/system/cpu/cpufreq/boost

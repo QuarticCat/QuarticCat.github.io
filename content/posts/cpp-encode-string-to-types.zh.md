@@ -11,7 +11,7 @@ tags: [cpp]
 非要举一个具有实用意义的场景的话，[PEGTL](https://github.com/taocpp/PEGTL) 是我能想到的一个很好的例子。这是一个 parser combinator 库，它使用类型来组合 parser ，比如这样：
 
 ```cpp
-struct separater: star<one<' ', '\t', '\r', '\n'>> {};
+struct separator: star<one<' ', '\t', '\r', '\n'>> {};
 ```
 
 那么要 parse 一段字符串的时候当然就要把字符串信息编码进类型里面了。

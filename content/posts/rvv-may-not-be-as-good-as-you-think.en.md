@@ -15,7 +15,7 @@ In contrast to SIMD architectures, RVV has variable-length vector registers. Tha
 - `vtype`: a CSR, includes
   - `vill`: represents whether the `vtype` configuration is ill-formed or not
   - `vma` / `vta`: controls the operation behavior of those masked-off elements and tail elements
-  - `vsew`: controls the length of a single elemnt, represented by `SEW = 8 | 16 | 32 | 64`
+  - `vsew`: controls the length of a single element, represented by `SEW = 8 | 16 | 32 | 64`
   - `vlmul`: controls how many registers are used in an operation, represented by `LMUL = 1/8 | 1/4 | 1/2 | 1 | 2 | 4 | 8`
 
 We use `vset{i}vl{i}` instructions to set both `vl` and `vtype`.
