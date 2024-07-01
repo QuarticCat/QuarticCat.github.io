@@ -11,8 +11,6 @@ buildDrafts: false
 buildFuture: true # hugo sometimes gets wrong if date format is "yyyy-mm-dd"
 buildExpired: false
 
-googleAnalytics: UA-188095502-1
-
 minify:
   disableXML: true
   minifyOutput: true
