@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://blog.quarticcat.com/sitemap.xml

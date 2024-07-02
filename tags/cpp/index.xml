@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Cpp on QuarticCat&#39;s Blog</title>
+    <link>https://blog.quarticcat.com/tags/cpp/</link>
+    <description>Recent content in Cpp on QuarticCat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Tue, 02 Jul 2024 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.quarticcat.com/tags/cpp/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>No more OOM in C/C&#43;&#43;/Rust builds</title>
+      <link>https://blog.quarticcat.com/posts/no-more-oom/</link>
+      <pubDate>Tue, 02 Jul 2024 00:00:00 +0000</pubDate>
+      <guid>https://blog.quarticcat.com/posts/no-more-oom/</guid>
+      <description>I&amp;rsquo;ve seen people complaining about some gigantic C/C++/Rust projects engulfing all of their memory during building from time to time. Fortunately, there are a few simple methods to alleviate the pain without sacrificing speed. By &amp;ldquo;simple,&amp;rdquo; I mean you don&amp;rsquo;t have to modify your code!
+Root of the problem Usually, the most memory-consuming part of C/C++/Rust builds is the linking phase. To link object files, the linker must read all of them into memory.</description>
+    </item>
+    <item>
+      <title>One more nasty design of C&#43;&#43;&#39;s name lookup</title>
+      <link>https://blog.quarticcat.com/posts/one-more-nasty-design-of-cpp-name-lookup/</link>
+      <pubDate>Wed, 23 Jun 2021 00:00:00 +0000</pubDate>
+      <guid>https://blog.quarticcat.com/posts/one-more-nasty-design-of-cpp-name-lookup/</guid>
+      <description>As we all know that C++&amp;rsquo;s name lookup has always been extremely counter-intuitive. The infamous argument-dependent lookup (ADL), for example, often leads to unexpected behavior and, worse yet, is often difficult to troubleshoot. This can happen when you define a function in your current namespace, but when you call it the compiler selects another function with the same name thousands of miles away, even though you did not using that foreign function in the current namespace.</description>
+    </item>
+    <item>
+      <title>How to read C&#43;&#43; types</title>
+      <link>https://blog.quarticcat.com/posts/read-cpp-types/</link>
+      <pubDate>Sat, 13 Feb 2021 00:00:00 +0000</pubDate>
+      <guid>https://blog.quarticcat.com/posts/read-cpp-types/</guid>
+      <description>The readability of C++&amp;rsquo;s types is terrible, and most beginner tutorials don&amp;rsquo;t go into detail about how to read them. They at most discuss the difference between top-level const and low-level const. Many of my friends have asked me about this, and I&amp;rsquo;ve talked about it numerous times. So I thought, why not write a blog post on it?
+A common misconception Before talking about type reading in detail, I&amp;rsquo;d like to address a common misconception.</description>
+    </item>
+  </channel>
+</rss>

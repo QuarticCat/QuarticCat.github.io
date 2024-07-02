@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Vector on QuarticCat&#39;s Blog</title>
+    <link>https://blog.quarticcat.com/tags/vector/</link>
+    <description>Recent content in Vector on QuarticCat&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 27 Feb 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://blog.quarticcat.com/tags/vector/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RVV may not be as good as you think</title>
+      <link>https://blog.quarticcat.com/posts/rvv-may-not-be-as-good-as-you-think/</link>
+      <pubDate>Sun, 27 Feb 2022 00:00:00 +0000</pubDate>
+      <guid>https://blog.quarticcat.com/posts/rvv-may-not-be-as-good-as-you-think/</guid>
+      <description>As an emerging ISA, RISC-V learns a lot from its predecessors&amp;rsquo; mistakes and brings some very appealing designs. In my circles, RISC-V is frequently associated with the words &amp;ldquo;modern&amp;rdquo; and &amp;ldquo;elegant&amp;rdquo;. Its vector extension (RVV) is often given equivalent praise, even though nearly no one has used a real-world RVV machine (including me) or even programmed in RVV. After experimenting with RVV for a while, I feel that it is not as good as many people claimed.</description>
+    </item>
+  </channel>
+</rss>
